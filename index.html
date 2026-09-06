@@ -8,6 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Firebase SDK (v10.8.0 - Compat/Modular) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
 
@@ -81,7 +85,7 @@
                             <th class="px-6 py-3 text-right">Asistentes</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200">
+                    <tbody class="divide-y divide-slate-200" id="tablaExposicionesBody">
                         <!-- Enero - Marzo 2026 -->
                         <tr class="bg-slate-50 font-semibold"><td colspan="5" class="px-6 py-2 text-xs text-red-800">Trimestre Enero - Marzo 2026 (8 exposiciones - 4.793 asistentes)</td></tr>
                         <tr><td class="px-6 py-3 font-medium text-slate-900">Imágenes de la Navidad en el Archivo ABC</td><td class="px-6 py-3">Fotografía</td><td class="px-6 py-3">Calle</td><td class="px-6 py-3">15 dic – 3 abr</td><td class="px-6 py-3 text-right">1.100</td></tr>
@@ -151,8 +155,24 @@
 
     </main>
 
-    <!-- Script de Chart.js con datos puros del PDF/Docx -->
+    <!-- Script de Firebase e Inicialización de Gráficos Chart.js -->
     <script>
+        // Configuración de Firebase (Sustituye por tus credenciales de la consola de Firebase)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "TU_PROYECTO_ID",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // Inicializar Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
         // Configuración del gráfico de Evolución de Asistentes
         const ctxEvolucion = document.getElementById('chartEvolucion').getContext('2d');
         new Chart(ctxEvolucion, {
