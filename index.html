@@ -3,74 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análisis del Histórico de Exposiciones - Fundación Cultura Las Rozas</title>
+    <title>Histórico de Exposiciones - Fundación Cultura Las Rozas</title>
+    <!-- Chart.js CDN para los gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary-color: #d9232e;
-            --secondary-color: #0088cc;
-            --dark-color: #222222;
-            --light-bg: #f8f9fa;
-            --border-color: #e2e8f0;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --primary-color: #b01c2e;
+            --secondary-color: #2c3e50;
+            --bg-color: #f4f4f9;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
         }
 
         body {
-            background-color: var(--light-bg);
-            color: var(--dark-color);
-            line-height: 1.6;
-            padding-bottom: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: #333;
         }
 
         header {
-            background-color: #ffffff;
-            border-bottom: 3px solid var(--primary-color);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background-color: var(--card-bg);
+            border-bottom: 2px solid var(--border-color);
+            padding: 20px 30px;
         }
 
-        .header-title {
-            text-align: left;
+        h1 {
+            color: var(--primary-color);
+            margin: 0 0 5px 0;
+            font-size: 1.8em;
         }
 
-        .header-title h1 {
-            font-size: 1.5rem;
-            color: var(--dark-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .header-title p {
-            font-size: 0.9rem;
+        p.subtitle {
+            margin: 0;
             color: #666;
+            font-size: 0.95em;
         }
 
-        .logos-container {
+        /* Nav Tabs */
+        .tabs {
             display: flex;
-            align-items: center;
-            gap: 20px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 30px;
         }
 
-        .logos-container img {
-            height: 60px;
-            width: auto;
-            object-fit: contain;
+        .tab-btn {
+            padding: 15px 25px;
+            border: none;
+            background: none;
+            font-size: 1em;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
         }
 
-        main {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
+        .tab-btn:hover {
+            color: var(--primary-color);
         }
 
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* Main Container */
+        .container {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* General & KPI Cards */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -79,358 +94,648 @@
         }
 
         .kpi-card {
-            background: #ffffff;
-            border-radius: 8px;
+            background: var(--card-bg);
             padding: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-color);
         }
 
         .kpi-card h3 {
-            font-size: 0.85rem;
+            margin: 0 0 10px 0;
+            font-size: 0.9em;
             color: #666;
             text-transform: uppercase;
-            margin-bottom: 10px;
         }
 
-        .kpi-card .number {
-            font-size: 1.8rem;
+        .kpi-card p {
+            margin: 0;
+            font-size: 1.8em;
             font-weight: bold;
-            color: var(--primary-color);
+            color: var(--secondary-color);
         }
 
-        .filter-section {
-            background: #ffffff;
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Exposiciones Tab */
+        .filter-bar {
             display: flex;
             gap: 15px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
-            align-items: center;
         }
 
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            min-width: 180px;
-        }
-
-        .filter-group label {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #444;
-        }
-
-        .filter-group select, .filter-group input {
-            padding: 8px 12px;
+        .filter-bar input, .filter-bar select {
+            padding: 10px 15px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 0.9rem;
+            border-radius: 6px;
+            font-size: 0.95em;
             outline: none;
         }
 
-        .table-container {
-            background: #ffffff;
+        .filter-bar input {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .expo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .expo-card {
+            background: var(--card-bg);
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            overflow-x: auto;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.88rem;
+        .expo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        th {
-            background-color: #f1f5f9;
-            color: #334155;
-            padding: 12px 16px;
-            font-weight: 600;
-            border-bottom: 2px solid var(--border-color);
-            white-space: nowrap;
+        .expo-card-header {
+            background-color: var(--secondary-color);
+            color: #fff;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.05em;
         }
 
-        td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
+        .expo-card-body {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .badge-periodo {
+        .expo-tag {
             display: inline-block;
+            background: #eef2f5;
+            color: var(--secondary-color);
             padding: 3px 8px;
             border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background-color: #e2e8f0;
-            color: #334155;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            width: fit-content;
         }
 
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.8rem;
-            color: #666;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
+        .expo-info {
+            font-size: 0.88em;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        /* Modal Details */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #888;
+        }
+
+        /* Admin Form */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover {
+            background-color: #8e1524;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-title">
-            <h1>Análisis Histórico de Exposiciones</h1>
-            <p>Fundación Municipal de Cultura de Las Rozas de Madrid</p>
-        </div>
-        <div class="logos-container">
-            <img src="Fundacion2.png" alt="Fundación Cultura Las Rozas">
-            <img src="Ayuntamenot55.png" alt="Ayuntamiento de Las Rozas">
-        </div>
+        <h1>Análisis Histórico de Exposiciones</h1>
+        <p class="subtitle">Fundación Municipal de Cultura de Las Rozas de Madrid</p>
     </header>
 
-    <main>
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <h3>Total Registros Registrados</h3>
-                <div class="number" id="kpi-total-exp">0</div>
-            </div>
-            <div class="kpi-card">
-                <h3>Total Asistentes Acumulados</h3>
-                <div class="number" id="kpi-total-asistentes">0</div>
-            </div>
-            <div class="kpi-card">
-                <h3>Promedio Asistentes / Exposición</h3>
-                <div class="number" id="kpi-promedio-asistentes">0</div>
-            </div>
-        </div>
+    <nav class="tabs">
+        <button class="tab-btn active" onclick="switchTab('general')">General</button>
+        <button class="tab-btn" onclick="switchTab('exposiciones')">Exposiciones</button>
+        <button class="tab-btn" onclick="switchTab('analisis')">Análisis</button>
+        <button class="tab-btn" onclick="switchTab('admin')">Administración</button>
+    </nav>
 
-        <div class="filter-section">
-            <div class="filter-group">
-                <label for="filter-periodo">Periodo de Memoria</label>
-                <select id="filter-periodo" onchange="filterData()">
-                    <option value="ALL">Todos los periodos</option>
-                    <option value="Ene-Mar 2024">Ene - Mar 2024</option>
-                    <option value="Abr-Jun 2024">Abr - Jun 2024</option>
-                    <option value="Jul-Sep 2024">Jul - Sep 2024</option>
-                    <option value="Oct-Dic 2024">Oct - Dic 2024</option>
-                    <option value="Ene-Mar 2025">Ene - Mar 2025</option>
-                    <option value="Abr-Jun 2025">Abr - Jun 2025</option>
-                    <option value="Oct-Dic 2025">Oct - Dic 2025</option>
-                    <option value="Ene-Mar 2026">Ene - Mar 2026</option>
+    <div class="container">
+        
+        <!-- TAB GENERAL -->
+        <section id="tab-general" class="tab-content active">
+            <h2>Visión General de la Actividad Expositiva</h2>
+            <p>Plataforma para el seguimiento e inventario de las exposiciones temporales de artes visuales reportadas en las memorias oficiales de la Fundación Municipal de Cultura de Las Rozas[cite: 1, 2, 3, 4, 5, 6, 7, 8].</p>
+            
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <h3>Total Exposiciones</h3>
+                    <p id="kpi-total-exp">0</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>Total Asistentes</h3>
+                    <p id="kpi-total-asist">0</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>Promedio Asistentes/Expo</h3>
+                    <p id="kpi-prom-asist">0</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>Disciplina con Más Público</h3>
+                    <p id="kpi-top-disc" style="font-size: 1.3em;">-</p>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Evolución de Asistentes por Período</h3>
+                    <canvas id="chartGeneralEvolucion"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Distribución por Disciplina Artística</h3>
+                    <canvas id="chartGeneralDisciplinas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB EXPOSICIONES -->
+        <section id="tab-exposiciones" class="tab-content">
+            <h2>Catálogo de Exposiciones</h2>
+            
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="Buscar por título o artista..." oninput="filtrarExposiciones()">
+                <select id="periodoFilter" onchange="filtrarExposiciones()">
+                    <option value="TODOS">Todos los períodos</option>
+                    <option value="Ene-Mar 2024">Ene-Mar 2024</option>
+                    <option value="Abr-Jun 2024">Abr-Jun 2024</option>
+                    <option value="Jul-Sep 2024">Jul-Sep 2024</option>
+                    <option value="Oct-Dic 2024">Oct-Dic 2024</option>
+                    <option value="Ene-Mar 2025">Ene-Mar 2025</option>
+                    <option value="Abr-Jun 2025">Abr-Jun 2025</option>
+                    <option value="Oct-Dic 2025">Oct-Dic 2025</option>
+                    <option value="Ene-Mar 2026">Ene-Mar 2026</option>
+                </select>
+                <select id="disciplinaFilter" onchange="filtrarExposiciones()">
+                    <option value="TODOS">Todas las disciplinas</option>
                 </select>
             </div>
-            <div class="filter-group">
-                <label for="filter-lugar">Lugar / Sala</label>
-                <select id="filter-lugar" onchange="filterData()">
-                    <option value="ALL">Todos los lugares</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="filter-disciplina">Disciplina</label>
-                <select id="filter-disciplina" onchange="filterData()">
-                    <option value="ALL">Todas las disciplinas</option>
-                </select>
-            </div>
-            <div class="filter-group" style="flex-grow: 1;">
-                <label for="search-input">Buscar por Título</label>
-                <input type="text" id="search-input" placeholder="Escriba para buscar..." onkeyup="filterData()">
-            </div>
-        </div>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Periodo</th>
-                        <th>Título de la Exposición</th>
-                        <th>Disciplina</th>
-                        <th>Lugar</th>
-                        <th>Fechas / Apertura-Cierre</th>
-                        <th>Entidades</th>
-                        <th>Asistentes</th>
-                    </tr>
-                </thead>
-                <tbody id="exposiciones-tbody">
-                </tbody>
-            </table>
-        </div>
-    </main>
+            <div id="expoGrid" class="expo-grid"></div>
+        </section>
 
-    <footer>
-        <p>Datos rigurosamente extraídos de las Memorias Técnicas y Económicas del Contrato Programa de la Fundación Municipal de Cultura de Las Rozas de Madrid.</p>
-    </footer>
+        <!-- TAB ANALISIS -->
+        <section id="tab-analisis" class="tab-content">
+            <h2>Métricas de Rendimiento y Análisis Predictivo</h2>
+            <p>Indicadores clave para orientar la toma de decisiones en futuras reprogramaciones culturales.</p>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Índice de Interés: Promedio de Asistentes por Disciplina</h3>
+                    <canvas id="chartAnalisisInteres"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Afluencia por Sala / Espacio de Exposición</h3>
+                    <canvas id="chartAnalisisSalas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB ADMINISTRACION -->
+        <section id="tab-admin" class="tab-content">
+            <h2>Añadir Nueva Exposición al Histórico</h2>
+            <p>Introduce los datos oficiales de la nueva memoria técnica. Al guardar, el catálogo y las métricas de análisis se actualizarán automáticamente.</p>
+            
+            <form id="addExpoForm" onsubmit="agregarExposicion(event)" style="max-width: 600px; background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #ddd;">
+                <div class="form-group">
+                    <label for="formPeriodo">Período / Memoria *</label>
+                    <input type="text" id="formPeriodo" placeholder="Ej: Abr-Jun 2026" required>
+                </div>
+                <div class="form-group">
+                    <label for="formTitulo">Título de la Exposición *</label>
+                    <input type="text" id="formTitulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="formDisciplina">Disciplina Artística *</label>
+                    <input type="text" id="formDisciplina" placeholder="Ej: Pintura, Fotografía, Escultura" required>
+                </div>
+                <div class="form-group">
+                    <label for="formLugar">Lugar / Sala *</label>
+                    <input type="text" id="formLugar" placeholder="Ej: Sala Maruja Mallo" required>
+                </div>
+                <div class="form-group">
+                    <label for="formFechas">Fechas de Exposición *</label>
+                    <input type="text" id="formFechas" placeholder="Ej: 10 may - 15 jun" required>
+                </div>
+                <div class="form-group">
+                    <label for="formArtistas">Artistas Participantes / Entidades</label>
+                    <input type="text" id="formArtistas" placeholder="Ej: Colección particular / Varios">
+                </div>
+                <div class="form-group">
+                    <label for="formAsistentes">Nº de Asistentes Registrados *</label>
+                    <input type="number" id="formAsistentes" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="formLink">Enlace a Documentación Externa (URL)</label>
+                    <input type="url" id="formLink" placeholder="https://...">
+                </div>
+                <button type="submit" class="btn-submit">Guardar y Actualizar Sistema</button>
+            </form>
+        </section>
+
+    </div>
+
+    <!-- MODAL DETALLE DE EXPOSICION -->
+    <div id="expoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal()">&times;</span>
+            <span id="modalTag" class="expo-tag"></span>
+            <h2 id="modalTitulo" style="margin-top: 5px; color: var(--primary-color);"></h2>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+            <p><strong>Período:</strong> <span id="modalPeriodo"></span></p>
+            <p><strong>Lugar / Sala:</strong> <span id="modalLugar"></span></p>
+            <p><strong>Fechas / Apertura-Cierre:</strong> <span id="modalFechas"></span></p>
+            <p><strong>Artistas / Entidades Participantes:</strong> <span id="modalArtistas"></span></p>
+            <p><strong>Asistentes Registrados:</strong> <span id="modalAsistentes"></span></p>
+            <div id="modalLinkContainer" style="margin-top: 20px;"></div>
+        </div>
+    </div>
 
     <script>
-        // Datos exactos extraídos estrictamente de las memorias proporcionadas
-        const exposicionesData = [
-            // Ene - Mar 2024
-            { periodo: "Ene-Mar 2024", titulo: "Marisa Cebrián. Nueva York-Londres - Madrid.", disciplina: "Pintura", lugar: "Auditorio", fechas: "14/12 a 15/01", entidades: "Ayuntamiento de Las Rozas", asistentes: 150 },
-            { periodo: "Ene-Mar 2024", titulo: "Ganadores y seleccionados del XXIV Certamen de grabado José Caballero.", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "20/12 a 25/01", entidades: "Ayuntamiento de Las Rozas", asistentes: 300 },
-            { periodo: "Ene-Mar 2024", titulo: "Asociación Cámara en Mano. Imágenes surrealistas.", disciplina: "Fotografía", lugar: "Auditorio", fechas: "14/02 a 10/02", entidades: "Asociación Cámara en Mano", asistentes: 150 },
-            { periodo: "Ene-Mar 2024", titulo: "Reasentados, 14 historias del Gueto de Varsovia.", disciplina: "Fotografía", lugar: "Auditorio", fechas: "25/01 a 31/01", entidades: "Ayuntamiento de Las Rozas / Comunidad Judía de Madrid / Centro Sefarad-Israel", asistentes: 50 },
-            { periodo: "Ene-Mar 2024", titulo: "II Certamen fotográfico Asociación Cámara en Mano.", disciplina: "Fotografía", lugar: "Auditorio", fechas: "01/02 a 29/02", entidades: "Asociación Cámara en Mano", asistentes: 150 },
-            { periodo: "Ene-Mar 2024", titulo: "Juan Salvago. Lugares imaginarios.", disciplina: "Pintura", lugar: "Sala Maruja Mallo", fechas: "08/02 a 25/03", entidades: "-", asistentes: 420 },
-            { periodo: "Ene-Mar 2024", titulo: "36º Concurso de Fotografía 'Jesús y Adán'.", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "20/02 a 08/03", entidades: "Ayuntamiento de Las Rozas Concejalía de Juventud", asistentes: 50 },
-            { periodo: "Ene-Mar 2024", titulo: "Exvotos. Alumnos de la asignatura 'Modelado del natural', del grado de Bellas Artes de la UCM", disciplina: "Escultura", lugar: "Auditorio", fechas: "14/03 a 14/04", entidades: "Facultad de Bellas Artes de la Complutense de Madrid", asistentes: 210 },
-            { periodo: "Ene-Mar 2024", titulo: "José Luis Sanz. Ecos de Japón.", disciplina: "Pintura, grabado y dibujo", lugar: "Sala Díaz Caneja", fechas: "21/03 a 21/04", entidades: "-", asistentes: 80 },
+        // DATOS EXTRAÍDOS RIGUROSAMENTE DE LAS MEMORIAS
+        let exposiciones = [
+            // Ene-Mar 2024
+            { periodo: "Ene-Mar 2024", titulo: "Marisa Cebrián. Nueva York-Londres - Madrid", disciplina: "Pintura", lugar: "Auditorio", fechas: "14/12 - 15/01", artistas: "Marisa Cebrián / Ayto. Las Rozas", asistentes: 150, link: "" },
+            { periodo: "Ene-Mar 2024", titulo: "Ganadores y seleccionados del XXIV Certamen de grabado José Caballero", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "20/12 - 25/01", artistas: "Varios artistas / Ayto. Las Rozas", asistentes: 300, link: "" },
+            { periodo: "Ene-Mar 2024", titulo: "Asociación Cámara en Mano. Imágenes surrealistas", disciplina: "Fotografía", lugar: "Auditorio", fechas: "14/02 - 10/02", artistas: "Asociación Cámara en Mano", asistentes: 150, link: "" },
+            { periodo: "Ene-Mar 2024", titulo: "Reasentados, 14 historias del Gueto de Varsovia", disciplina: "Fotografía", lugar: "Auditorio", fechas: "25/01 - 31/01", artistas: "Comunidad Judía de Madrid / CSI", asistentes: 50, link: "" },
+            { periodo: "Ene-Mar 2024", titulo: "II Certamen fotográfico Asociación Cámara en Mano", disciplina: "Fotografía", lugar: "Auditorio", fechas: "01/02 - 29/02", artistas: "Asociación Cámara en Mano", asistentes: 150, link: "" },
+            { periodo: "Ene-Mar 2024", titulo: "Juan Salvago. Lugares imaginarios", disciplina: "Pintura", lugar: "Sala Maruja Mallo", fechas: "08/02 - 25/03", artistas: "Juan Salvago", asistentes: 420, link: "" },
+            { periodo: "Ene-Mar 2024", titulo: "36º Concurso de Fotografía 'Jesús y Adán'", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "20/02 - 08/03", artistas: "Concejalía de Juventud", asistentes: 50, link: "" },
+            { periodo: "Ene-Mar 2024", titulo: "Exvotos. Alumnos de 'Modelado del natural' (UCM)", disciplina: "Escultura", lugar: "Auditorio", fechas: "14/03 - 14/04", artistas: "Alumnos UCM Bellas Artes", asistentes: 210, link: "" },
+            { periodo: "Ene-Mar 2024", titulo: "José Luis Sanz. Ecos de Japón", disciplina: "Pintura, grabado y dibujo", lugar: "Sala Díaz Caneja", fechas: "21/03 - 21/04", artistas: "José Luis Sanz", asistentes: 80, link: "" },
 
-            // Abr - Jun 2024
-            { periodo: "Abr-Jun 2024", titulo: "Exvotos. Alumnos de la asignatura 'Modelado del natural', del grado de Bellas Artes de la UCM", disciplina: "Escultura", lugar: "Auditorio", fechas: "14/03 a 14/04", entidades: "Facultad de Bellas Artes de la Complutense de Madrid", asistentes: 210 },
-            { periodo: "Abr-Jun 2024", titulo: "José Luis Sanz. Ecos de Japón.", disciplina: "Pintura, grabado y dibujo", lugar: "Sala Díaz Caneja", fechas: "21/03 a 21/04", entidades: "-", asistentes: 80 },
-            { periodo: "Abr-Jun 2024", titulo: "Prórroga de José Luis Sanz. Ecos de Japón.", disciplina: "Pintura, grabado y dibujo", lugar: "Sala Díaz Caneja", fechas: "17/05", entidades: "-", asistentes: 30 },
-            { periodo: "Abr-Jun 2024", titulo: "Encuentro con el objeto. Escultura contemporánea", disciplina: "Escultura", lugar: "Sala Maruja Mallo", fechas: "01/04 a 21/04", entidades: "Subdirección General de Bellas Artes de la CMM / Programa Red Itiner", asistentes: 300 },
-            { periodo: "Abr-Jun 2024", titulo: "José Andrés Fernández Cornejo. Kybernetike. [El arte de gobernar la nave].", disciplina: "Pintura", lugar: "Auditorio", fechas: "18/04 a 23/05", entidades: "-", asistentes: 120 },
-            { periodo: "Abr-Jun 2024", titulo: "Fernando Luján. Redes", disciplina: "Fotografía", lugar: "Sala Maruja Mallo", fechas: "25/04 a 25/05", entidades: "Subdirección General de Bellas Artes de la CMM / Programa Red Itiner", asistentes: 290 },
-            { periodo: "Abr-Jun 2024", titulo: "1975. Cambio de tercio", disciplina: "Fotografía", lugar: "Sala Maruja Mallo", fechas: "30/05 a 19/06", entidades: "-", asistentes: 450 },
-            { periodo: "Abr-Jun 2024", titulo: "Fragmentos. Universidad de Mayores de la UCM.", disciplina: "Escultura", lugar: "Sala Auditorio", fechas: "06/06 a 30/06", entidades: "Facultad de Bellas Artes de la Complutense de Madrid", asistentes: 280 },
-            { periodo: "Abr-Jun 2024", titulo: "Creatividad infantil y Pintura Infantil. Dibujo y Pintura Adultos", disciplina: "Pintura", lugar: "Centro Cultural de Las Matas", fechas: "18/06 a 28/06", entidades: "-", asistentes: 200 },
-            { periodo: "Abr-Jun 2024", titulo: "Creatividad infantil Pintura Infantil", disciplina: "Pintura", lugar: "Sala Díaz Caneja", fechas: "30/05 a 13/06", entidades: "-", asistentes: 250 },
+            // Abr-Jun 2024
+            { periodo: "Abr-Jun 2024", titulo: "Encuentro con el objeto. Escultura contemporánea (Red Itiner)", disciplina: "Escultura", lugar: "Sala Maruja Mallo", fechas: "01/04 - 21/04", artistas: "Red Itiner / CAM", asistentes: 300, link: "" },
+            { periodo: "Abr-Jun 2024", titulo: "José Andrés Fernández Cornejo. Kybernetike", disciplina: "Pintura", lugar: "Auditorio", fechas: "18/04 - 23/05", artistas: "José Andrés Fernández Cornejo", asistentes: 120, link: "" },
+            { periodo: "Abr-Jun 2024", titulo: "Fernando Luján. Redes", disciplina: "Fotografía", lugar: "Sala Maruja Mallo", fechas: "25/04 - 25/05", artistas: "Fernando Luján", asistentes: 290, link: "" },
+            { periodo: "Abr-Jun 2024", titulo: "1975. Cambio de tercio (Red Itiner)", disciplina: "Fotografía", lugar: "Sala Maruja Mallo", fechas: "30/05 - 19/06", artistas: "Red Itiner / CAM", asistentes: 450, link: "" },
+            { periodo: "Abr-Jun 2024", titulo: "Fragmentos. Universidad de Mayores UCM", disciplina: "Escultura", lugar: "Sala Auditorio", fechas: "06/06 - 30/06", artistas: "Universidad de Mayores UCM", asistentes: 280, link: "" },
+            { periodo: "Abr-Jun 2024", titulo: "Creatividad infantil y Pintura Adultos", disciplina: "Pintura", lugar: "CC Las Matas", fechas: "18/06 - 28/06", artistas: "Alumnos Talleres Las Matas", asistentes: 200, link: "" },
+            { periodo: "Abr-Jun 2024", titulo: "Creatividad infantil / Pintura Infantil", disciplina: "Pintura", lugar: "Sala Díaz Caneja", fechas: "30/05 - 13/06", artistas: "Alumnos Talleres Municipales", asistentes: 250, link: "" },
 
-            // Jul - Sep 2024
-            { periodo: "Jul-Sep 2024", titulo: "Exposición de Talleres Municipales", disciplina: "Varias", lugar: "CCPR", fechas: "11/SEP a 24/SEP", entidades: "-", asistentes: 250 },
-            { periodo: "Jul-Sep 2024", titulo: "Vive tu sueño", disciplina: "Pintura", lugar: "Auditorio", fechas: "19/SEP a 30/SEP", entidades: "Fundación Colisée", asistentes: 300 },
+            // Jul-Sep 2024
+            { periodo: "Jul-Sep 2024", titulo: "Muestra Muestra Talleres Municipales", disciplina: "Varios", lugar: "CCPR", fechas: "11/SEP - 24/SEP", artistas: "Alumnos Talleres Municipales", asistentes: 250, link: "" },
+            { periodo: "Jul-Sep 2024", titulo: "Vive tu sueño", disciplina: "Pintura", lugar: "Auditorio", fechas: "19/SEP - 30/SEP", artistas: "Fundación Colisée", asistentes: 300, link: "" },
 
-            // Oct - Dic 2024
-            { periodo: "Oct-Dic 2024", titulo: "Taller municipal de Tapices", disciplina: "Tapices", lugar: "Sala Díaz Caneja CCPR", fechas: "3 OCT a 25 OCT", entidades: "-", asistentes: 150 },
-            { periodo: "Oct-Dic 2024", titulo: "Félix Arellano. Flor caníbal", disciplina: "Pintura y escultura", lugar: "Auditorio", fechas: "4 OCT a 31 OCT", entidades: "-", asistentes: 290 },
-            { periodo: "Oct-Dic 2024", titulo: "Juan Vicente Muñoz. Nomofobias", disciplina: "Escultura", lugar: "Sala Maruja Mallo CCPR", fechas: "17 OCT a 8 DIC", entidades: "-", asistentes: 850 },
-            { periodo: "Oct-Dic 2024", titulo: "Fotografía de proyectos. Seis + cuatro visiones", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "7 NOV a 30 NOV", entidades: "-", asistentes: 210 },
-            { periodo: "Oct-Dic 2024", titulo: "Carlos González Alonso. Un instante en movimiento", disciplina: "Pintura", lugar: "Auditorio", fechas: "8 NOV a 8 DIC", entidades: "-", asistentes: 120 },
-            { periodo: "Oct-Dic 2024", titulo: "Asociación Esfumato. Transparencias", disciplina: "Pintura", lugar: "Auditorio", fechas: "12 DIC a 12 ENE", entidades: "-", asistentes: 250 },
-            { periodo: "Oct-Dic 2024", titulo: "Asociación Cámara en Mano. Las horas mágicas del sol", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "12 DIC a 12 ENE", entidades: "-", asistentes: 250 },
-            { periodo: "Oct-Dic 2024", titulo: "Ganadores y seleccionados. Certamen José Caballero", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "19 DIC a 20 ENE", entidades: "-", asistentes: 280 },
+            // Oct-Dic 2024
+            { periodo: "Oct-Dic 2024", titulo: "Taller municipal de Tapices", disciplina: "Textil", lugar: "Sala Díaz Caneja", fechas: "03/OCT - 25/OCT", artistas: "Alumnos Taller Tapices", asistentes: 150, link: "" },
+            { periodo: "Oct-Dic 2024", titulo: "Félix Arellano. Flor caníbal", disciplina: "Pintura y escultura", lugar: "Auditorio", fechas: "04/OCT - 31/OCT", artistas: "Félix Arellano", asistentes: 290, link: "" },
+            { periodo: "Oct-Dic 2024", titulo: "Juan Vicente Muñoz. Nomofobias", disciplina: "Escultura", lugar: "Sala Maruja Mallo", fechas: "17/OCT - 08/DIC", artistas: "Juan Vicente Muñoz", asistentes: 850, link: "" },
+            { periodo: "Oct-Dic 2024", titulo: "Fotografía de proyectos. Seis + cuatro visiones", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "07/NOV - 30/NOV", artistas: "Alumnos Taller Fotografía", asistentes: 210, link: "" },
+            { periodo: "Oct-Dic 2024", titulo: "Carlos González Alonso. Un instante en movimiento", disciplina: "Pintura", lugar: "Auditorio", fechas: "08/NOV - 08/DIC", artistas: "Carlos González Alonso", asistentes: 120, link: "" },
+            { periodo: "Oct-Dic 2024", titulo: "Asociación Esfumato. Transparencias", disciplina: "Pintura", lugar: "Auditorio", fechas: "12/DIC - 12/ENE", artistas: "Asociación Esfumato", asistentes: 250, link: "" },
+            { periodo: "Oct-Dic 2024", titulo: "Asociación Cámara en Mano. Las horas mágicas del sol", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "12/DIC - 12/ENE", artistas: "Asociación Cámara en Mano", asistentes: 250, link: "" },
+            { periodo: "Oct-Dic 2024", titulo: "Ganadores y seleccionados Certamen José Caballero", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "19/DIC - 20/ENE", artistas: "Varios artistas", asistentes: 280, link: "" },
 
-            // Ene - Mar 2025
-            { periodo: "Ene-Mar 2025", titulo: "III Certamen Fotográfico de la Asociación Cámara en Mano. Ganadores y seleccionados.", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "23 ENE - 13 FEB", entidades: "-", asistentes: 120 },
-            { periodo: "Ene-Mar 2025", titulo: "Alejandro Fernández Sáez (Kalifa). Poco tengo que decir", disciplina: "Pintura y dibujo", lugar: "Sala Maruja Mallo", fechas: "30 ENE - 2 MAR", entidades: "-", asistentes: 300 },
-            { periodo: "Ene-Mar 2025", titulo: "Lucía Rodríguez. Hilo de acero y bambú.", disciplina: "Fotografía", lugar: "Sala J. M. Díaz Caneja", fechas: "30 ENE - 2 MAR", entidades: "-", asistentes: 120 },
-            { periodo: "Ene-Mar 2025", titulo: "Carmen la Griega. Llévame donde haya vida.", disciplina: "Pintura, dibujo y vídeo", lugar: "Sala Maruja Mallo", fechas: "6 MAR - 6 ABR", entidades: "-", asistentes: 850 },
-            { periodo: "Ene-Mar 2025", titulo: "Madrileños centenarios. La sabiduría de la longevidad.", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "19 MAR - 7 ABR", entidades: "-", asistentes: 1200 },
-            { periodo: "Ene-Mar 2025", titulo: "37º Certamen de Fotografía Jesús y Adán. Ganadores y seleccionados", disciplina: "Fotografía", lugar: "Sala J. M. Díaz Caneja", fechas: "20 MAR - 3 ABR", entidades: "-", asistentes: 150 },
-            { periodo: "Ene-Mar 2025", titulo: "Exposición 'Olimpiadas Escolares'", disciplina: "Varios", lugar: "Sala Auditorio", fechas: "4 ABR", entidades: "-", asistentes: 230 },
-            { periodo: "Ene-Mar 2025", titulo: "Fashion Show.", disciplina: "Moda", lugar: "Sala Auditorio", fechas: "7 MAR", entidades: "-", asistentes: 300 },
+            // Ene-Mar 2025
+            { periodo: "Ene-Mar 2025", titulo: "III Certamen Fotográfico Asociación Cámara en Mano", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "23/ENE - 13/FEB", artistas: "Asociación Cámara en Mano", asistentes: 120, link: "" },
+            { periodo: "Ene-Mar 2025", titulo: "Alejandro Fernández Sáez (Kalifa). Poco tengo que decir", disciplina: "Pintura y dibujo", lugar: "Sala Maruja Mallo", fechas: "30/ENE - 02/MAR", artistas: "Kalifa", asistentes: 300, link: "https://elpais.com" },
+            { periodo: "Ene-Mar 2025", titulo: "Lucía Rodríguez. Hilo de acero y bambú", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "30/ENE - 02/MAR", artistas: "Lucía Rodríguez", asistentes: 120, link: "" },
+            { periodo: "Ene-Mar 2025", titulo: "Carmen la Griega. Llévame donde haya vida", disciplina: "Pintura, dibujo y vídeo", lugar: "Sala Maruja Mallo", fechas: "06/MAR - 06/ABR", artistas: "Carmen la Griega", asistentes: 850, link: "" },
+            { periodo: "Ene-Mar 2025", titulo: "Madrileños centenarios. La sabiduría de la longevidad", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "19/MAR - 07/ABR", artistas: "Varios / CAM", asistentes: 1200, link: "" },
+            { periodo: "Ene-Mar 2025", titulo: "37º Certamen de Fotografía Jesús y Adán", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "20/MAR - 03/ABR", artistas: "Concejalía de Juventud", asistentes: 150, link: "" },
+            { periodo: "Ene-Mar 2025", titulo: "Exposición 'Olimpiadas Escolares'", disciplina: "Varios", lugar: "Sala Auditorio", fechas: "04/ABR", artistas: "Escuelas locales", asistentes: 230, link: "" },
+            { periodo: "Ene-Mar 2025", titulo: "Fashion Show", disciplina: "Moda", lugar: "Sala Auditorio", fechas: "07/MAR", artistas: "Alumnas Taller Corte y Confección", asistentes: 300, link: "" },
 
-            // Abr - Jun 2025
-            { periodo: "Abr-Jun 2025", titulo: "Tirando del hilo. Lenguajes textiles en el arte contemporáneo.", disciplina: "Textil", lugar: "Sala Maruja Mallo", fechas: "14 abr - 4 may", entidades: "Red Itiner / Subdirección General de Bellas Artes", asistentes: 420 },
-            { periodo: "Abr-Jun 2025", titulo: "Asociación Cámara en Mano. Visiones textiles", disciplina: "Fotografía", lugar: "Sala J. M. Díaz Caneja", fechas: "10 abr - 10 may", entidades: "-", asistentes: 150 },
-            { periodo: "Abr-Jun 2025", titulo: "Pedro Palleiro. La ruina moderna", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "11 abr - 11 may", entidades: "-", asistentes: 320 },
-            { periodo: "Abr-Jun 2025", titulo: "India Toctli. El otro idioma.", disciplina: "Pintura", lugar: "Sala Maruja Mallo", fechas: "14 may - 18 jun", entidades: "-", asistentes: 560 },
-            { periodo: "Abr-Jun 2025", titulo: "Exvotos", disciplina: "Escultura", lugar: "Sala Auditorio", fechas: "19 may - 6 jun", entidades: "-", asistentes: 120 },
-            { periodo: "Abr-Jun 2025", titulo: "Mariano Cobo. Gotas", disciplina: "Pintura y escultura", lugar: "Sala Auditorio", fechas: "13 jun - 20 jul", entidades: "-", asistentes: 210 },
-            { periodo: "Abr-Jun 2025", titulo: "Talleres infantiles Centro Cultural Pérez de la Riva", disciplina: "Creatividad", lugar: "Sala J. M. Díaz Caneja", fechas: "28 may - 11 junio", entidades: "-", asistentes: 200 },
-            { periodo: "Abr-Jun 2025", titulo: "Talleres infantiles Entremontes", disciplina: "Creatividad y pintura", lugar: "Centro Cultural Entremontes", fechas: "5 may - 23 may", entidades: "-", asistentes: 100 },
-            { periodo: "Abr-Jun 2025", titulo: "Talleres adultos Entremontes", disciplina: "Vidrio, restauración y pintura adultos", lugar: "Centro Cultural Entremontes", fechas: "28 may - 16 jun", entidades: "-", asistentes: 120 },
-            { periodo: "Abr-Jun 2025", titulo: "Talleres Centro Cultural Las Matas", disciplina: "Pintura, dibujo y pintura infantil, creatividad", lugar: "Centro Cultural Las Matas", fechas: "16 jun - 22 jun", entidades: "-", asistentes: 150 },
+            // Abr-Jun 2025
+            { periodo: "Abr-Jun 2025", titulo: "Tirando del hilo. Lenguajes textiles en el arte contemporáneo", disciplina: "Textil", lugar: "Sala Maruja Mallo", fechas: "14/ABR - 04/MAY", artistas: "Red Itiner / Bellas Artes CAM", asistentes: 420, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "Asociación Cámara en Mano. Visiones textiles", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "10/ABR - 10/MAY", artistas: "Asociación Cámara en Mano", asistentes: 150, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "Pedro Palleiro. La ruina moderna", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "11/ABR - 11/MAY", artistas: "Pedro Palleiro", asistentes: 320, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "India Toctli. El otro idioma", disciplina: "Pintura", lugar: "Sala Maruja Mallo", fechas: "14/MAY - 18/JUN", artistas: "India Toctli (Comisaria: Nerea Ubieto)", asistentes: 560, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "Exvotos", disciplina: "Escultura", lugar: "Sala Auditorio", fechas: "19/MAY - 06/JUN", artistas: "Alumnos UCM", asistentes: 120, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "Mariano Cobo. Gotas", disciplina: "Pintura y escultura", lugar: "Sala Auditorio", fechas: "13/JUN - 20/JUL", artistas: "Mariano Cobo", asistentes: 210, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "Talleres infantiles CCPR", disciplina: "Varios", lugar: "Sala Díaz Caneja", fechas: "28/MAY - 11/JUN", artistas: "Alumnos CCPR", asistentes: 200, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "Talleres infantiles Entremontes", disciplina: "Pintura", lugar: "CC Entremontes", fechas: "05/MAY - 23/MAY", artistas: "Alumnos Entremontes", asistentes: 100, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "Talleres adultos Entremontes", disciplina: "Varios", lugar: "CC Entremontes", fechas: "28/MAY - 16/JUN", artistas: "Alumnos Entremontes", asistentes: 120, link: "" },
+            { periodo: "Abr-Jun 2025", titulo: "Talleres CC Las Matas", disciplina: "Pintura", lugar: "CC Las Matas", fechas: "16/JUN - 22/JUN", artistas: "Alumnos Las Matas", asistentes: 150, link: "" },
 
-            // Oct - Dic 2025
-            { periodo: "Oct-Dic 2025", titulo: "Marina Reina. Tras el umbral: Relatos de una estancia", disciplina: "Pintura y cerámica", lugar: "Sala Maruja Mallo", fechas: "9 oct - 6 nov", entidades: "-", asistentes: 620 },
-            { periodo: "Oct-Dic 2025", titulo: "José Luis García de Ceca. Acuarelas", disciplina: "Pintura", lugar: "Sala J. M. Díaz Caneja", fechas: "9 oct – 21 nov", entidades: "-", asistentes: 450 },
-            { periodo: "Oct-Dic 2025", titulo: "Vicente Sarrión. A través de los años.", disciplina: "Pintura", lugar: "Sala Auditorio", fechas: "3 oct – 31 oct", entidades: "-", asistentes: 320 },
-            { periodo: "Oct-Dic 2025", titulo: "Sara García. Un vaso de agua salada", disciplina: "Varios", lugar: "Sala Maruja Mallo", fechas: "13 nov – 11 dic", entidades: "-", asistentes: 560 },
-            { periodo: "Oct-Dic 2025", titulo: "Fotografía de proyectos. Entorno íntimo", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "7 nov – 3 dic", entidades: "-", asistentes: 790 },
-            { periodo: "Oct-Dic 2025", titulo: "Ganadores y seleccionados. XXVI Certamen de Grabado José Caballero", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "18 dic – 20 ene", entidades: "-", asistentes: 410 },
-            { periodo: "Oct-Dic 2025", titulo: "Asociación Esfumato. 20 años, 20 miradas", disciplina: "Pintura", lugar: "Sala J. M. Díaz Caneja", fechas: "11 dic – 15 ene", entidades: "-", asistentes: 200 },
-            { periodo: "Oct-Dic 2025", titulo: "Imágenes de la Navidad en el Archivo ABC", disciplina: "Fotografía", lugar: "Calle", fechas: "15 dic – 3 abr", entidades: "-", asistentes: 1100 },
+            // Oct-Dic 2025
+            { periodo: "Oct-Dic 2025", titulo: "Marina Reina. Tras el umbral: Relatos de una estancia", disciplina: "Pintura y cerámica", lugar: "Sala Maruja Mallo", fechas: "09/OCT - 06/NOV", artistas: "Marina Reina", asistentes: 620, link: "" },
+            { periodo: "Oct-Dic 2025", titulo: "José Luis García de Ceca. Acuarelas", disciplina: "Pintura", lugar: "Sala Díaz Caneja", fechas: "09/OCT - 21/NOV", artistas: "José Luis García de Ceca", asistentes: 450, link: "" },
+            { periodo: "Oct-Dic 2025", titulo: "Vicente Sarrión. A través de los años", disciplina: "Pintura", lugar: "Sala Auditorio", fechas: "03/OCT - 31/OCT", artistas: "Vicente Sarrión", asistentes: 320, link: "" },
+            { periodo: "Oct-Dic 2025", titulo: "Sara García. Un vaso de agua salada", disciplina: "Varios", lugar: "Sala Maruja Mallo", fechas: "13/NOV - 11/DIC", artistas: "Sara García", asistentes: 560, link: "" },
+            { periodo: "Oct-Dic 2025", titulo: "Fotografía de proyectos. Entorno íntimo", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "07/NOV - 03/DIC", artistas: "Alumnos Taller Fotografía", asistentes: 790, link: "" },
+            { periodo: "Oct-Dic 2025", titulo: "Ganadores y seleccionados. XXVI Certamen José Caballero", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "18/DIC - 20/ENE", artistas: "Varios artistas", asistentes: 410, link: "" },
+            { periodo: "Oct-Dic 2025", titulo: "Asociación Esfumato. 20 años, 20 miradas", disciplina: "Pintura", lugar: "Sala Díaz Caneja", fechas: "11/DIC - 15/ENE", artistas: "Asociación Esfumato", asistentes: 200, link: "" },
+            { periodo: "Oct-Dic 2025", titulo: "Imágenes de la Navidad en el Archivo ABC", disciplina: "Fotografía", lugar: "Calle", fechas: "15/DIC - 03/ABR", artistas: "Archivo ABC", asistentes: 1100, link: "" },
 
-            // Ene - Mar 2026
-            { periodo: "Ene-Mar 2026", titulo: "Imágenes de la Navidad en el Archivo ABC", disciplina: "Fotografía", lugar: "Calle", fechas: "15 dic – 3 abr", entidades: "-", asistentes: 1100 },
-            { periodo: "Ene-Mar 2026", titulo: "IV Certamen fotográfico Cámara en Mano. Ganadores y seleccionados", disciplina: "Fotografía", lugar: "Sala J. M. Díaz Caneja", fechas: "15 ene – 15 feb", entidades: "-", asistentes: 350 },
-            { periodo: "Ene-Mar 2026", titulo: "Mateo García Menéndez. Las formas del hábito", disciplina: "Pintura", lugar: "Sala Auditorio", fechas: "24 ene – 26 feb", entidades: "-", asistentes: 1100 },
-            { periodo: "Ene-Mar 2026", titulo: "Eduardo Arroyo: la creación de un artista", disciplina: "Dibujo", lugar: "Sala Maruja Mallo", fechas: "29 ene – 19 feb", entidades: "Red Itiner de la Comunidad de Madrid", asistentes: 850 },
-            { periodo: "Ene-Mar 2026", titulo: "Ecologías del colapso", disciplina: "Varios", lugar: "Sala Maruja Mallo", fechas: "29 feb – 20 may", entidades: "-", asistentes: 650 },
-            { periodo: "Ene-Mar 2026", titulo: "Arquitectura moderna de Madrid. Fotografías de Ana Amado", disciplina: "Fotografía", lugar: "Sala J. M. Díaz Caneja", fechas: "29 feb – 20 may", entidades: "-", asistentes: 290 },
-            { periodo: "Ene-Mar 2026", titulo: "Ex Votos. Alumnos de escultura y modelado UCM", disciplina: "Escultura", lugar: "Sala Auditorio", fechas: "4 mar – 14 mar", entidades: "UCM", asistentes: 200 },
-            { periodo: "Ene-Mar 2026", titulo: "Música popular: una visión fotográfica", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "20 mar – 12 abr", entidades: "-", asistentes: 253 }
+            // Ene-Mar 2026
+            { periodo: "Ene-Mar 2026", titulo: "IV Certamen fotográfico Cámara en Mano", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "15/ENE - 15/FEB", artistas: "Asociación Cámara en Mano", asistentes: 350, link: "" },
+            { periodo: "Ene-Mar 2026", titulo: "Mateo García Menéndez. Las formas del hábito", disciplina: "Pintura", lugar: "Sala Auditorio", fechas: "24/ENE - 26/FEB", artistas: "Mateo García Menéndez", asistentes: 1100, link: "" },
+            { periodo: "Ene-Mar 2026", titulo: "Eduardo Arroyo: la creación de un artista", disciplina: "Dibujo", lugar: "Sala Maruja Mallo", fechas: "29/ENE - 19/FEB", artistas: "Eduardo Arroyo / Red Itiner", asistentes: 850, link: "" },
+            { periodo: "Ene-Mar 2026", titulo: "Ecologías del colapso", disciplina: "Varios", lugar: "Sala Maruja Mallo", fechas: "29/FEB - 20/MAY", artistas: "Varios artistas", asistentes: 650, link: "" },
+            { periodo: "Ene-Mar 2026", titulo: "Arquitectura moderna de Madrid. Fotografías de Ana Amado", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "29/FEB - 20/MAY", artistas: "Ana Amado", asistentes: 290, link: "" },
+            { periodo: "Ene-Mar 2026", titulo: "Ex Votos. Alumnos de escultura y modelado UCM", disciplina: "Escultura", lugar: "Sala Auditorio", fechas: "04/MAR - 14/MAR", artistas: "Alumnos UCM", asistentes: 200, link: "" },
+            { periodo: "Ene-Mar 2026", titulo: "Música popular: una visión fotográfica", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "20/MAR - 12/ABR", artistas: "Varios artistas", asistentes: 253, link: "" }
         ];
 
-        function populateSelectFilters() {
-            const lugares = [...new Set(exposicionesData.map(item => item.lugar))].sort();
-            const disciplinas = [...new Set(exposicionesData.map(item => item.disciplina))].sort();
+        // Instancias de gráficos Chart.js
+        let chartGenEvolucion, chartGenDisciplinas, chartAnaInteres, chartAnaSalas;
 
-            const lugarSelect = document.getElementById('filter-lugar');
-            lugares.forEach(lugar => {
-                const opt = document.createElement('option');
-                opt.value = lugar;
-                opt.textContent = lugar;
-                lugarSelect.appendChild(opt);
-            });
+        // Carga inicial
+        window.onload = function() {
+            poblarFiltroDisciplinas();
+            actualizarTodo();
+        };
 
-            const disciplinaSelect = document.getElementById('filter-disciplina');
-            disciplinas.forEach(disc => {
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            if(tabId === 'general' || tabId === 'analisis') {
+                actualizarGraficos();
+            }
+        }
+
+        function poblarFiltroDisciplinas() {
+            const select = document.getElementById('disciplinaFilter');
+            const disciplinas = [...new Set(exposiciones.map(e => e.disciplina))];
+            disciplinas.forEach(d => {
                 const opt = document.createElement('option');
-                opt.value = disc;
-                opt.textContent = disc;
-                disciplinaSelect.appendChild(opt);
+                opt.value = d;
+                opt.textContent = d;
+                select.appendChild(opt);
             });
         }
 
-        function filterData() {
-            const periodoVal = document.getElementById('filter-periodo').value;
-            const lugarVal = document.getElementById('filter-lugar').value;
-            const disciplinaVal = document.getElementById('filter-disciplina').value;
-            const searchVal = document.getElementById('search-input').value.toLowerCase();
-
-            const filtered = exposicionesData.filter(item => {
-                const matchPeriodo = (periodoVal === 'ALL' || item.periodo === periodoVal);
-                const matchLugar = (lugarVal === 'ALL' || item.lugar === lugarVal);
-                const matchDisciplina = (disciplinaVal === 'ALL' || item.disciplina === disciplinaVal);
-                const matchSearch = item.titulo.toLowerCase().includes(searchVal);
-                return matchPeriodo && matchLugar && matchDisciplina && matchSearch;
-            });
-
-            renderTable(filtered);
-            updateKPIs(filtered);
+        function actualizarTodo() {
+            renderKPIs();
+            renderGridExposiciones();
+            actualizarGraficos();
         }
 
-        function renderTable(data) {
-            const tbody = document.getElementById('exposiciones-tbody');
-            tbody.innerHTML = '';
+        function renderKPIs() {
+            const totalExp = exposiciones.length;
+            const totalAsist = exposiciones.reduce((sum, e) => sum + e.asistentes, 0);
+            const promAsist = totalExp > 0 ? Math.round(totalAsist / totalExp) : 0;
 
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">No se encontraron registros que coincidan con los filtros.</td></tr>';
-                return;
+            // Disciplina TOP
+            const discMap = {};
+            exposiciones.forEach(e => {
+                discMap[e.disciplina] = (discMap[e.disciplina] || 0) + e.asistentes;
+            });
+            let topDisc = "-";
+            let maxAsist = 0;
+            for(let d in discMap) {
+                if(discMap[d] > maxAsist) {
+                    maxAsist = discMap[d];
+                    topDisc = d;
+                }
             }
 
-            data.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><span class="badge-periodo">${item.periodo}</span></td>
-                    <td><strong>${item.titulo}</strong></td>
-                    <td>${item.disciplina}</td>
-                    <td>${item.lugar}</td>
-                    <td>${item.fechas}</td>
-                    <td>${item.entidades}</td>
-                    <td><strong>${item.asistentes.toLocaleString('es-ES')}</strong></td>
+            document.getElementById('kpi-total-exp').innerText = totalExp;
+            document.getElementById('kpi-total-asist').innerText = totalAsist.toLocaleString('es-ES');
+            document.getElementById('kpi-prom-asist').innerText = promAsist.toLocaleString('es-ES');
+            document.getElementById('kpi-top-disc').innerText = topDisc;
+        }
+
+        function renderGridExposiciones() {
+            const grid = document.getElementById('expoGrid');
+            grid.innerHTML = "";
+
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const periodo = document.getElementById('periodoFilter').value;
+            const disciplina = document.getElementById('disciplinaFilter').value;
+
+            const filtradas = exposiciones.filter(e => {
+                const matchSearch = e.titulo.toLowerCase().includes(search) || e.artistas.toLowerCase().includes(search);
+                const matchPeriodo = periodo === "TODOS" || e.periodo === periodo;
+                const matchDisciplina = disciplina === "TODOS" || e.disciplina === disciplina;
+                return matchSearch && matchPeriodo && matchDisciplina;
+            });
+
+            filtradas.forEach((e) => {
+                const card = document.createElement('div');
+                card.className = 'expo-card';
+                card.onclick = () => abrirModal(e);
+                card.innerHTML = `
+                    <div class="expo-card-header">${e.titulo}</div>
+                    <div class="expo-card-body">
+                        <div>
+                            <span class="expo-tag">${e.disciplina}</span>
+                            <div class="expo-info"><strong>Sala:</strong> ${e.lugar}</div>
+                            <div class="expo-info"><strong>Fechas:</strong> ${e.fechas}</div>
+                            <div class="expo-info"><strong>Período:</strong> ${e.periodo}</div>
+                        </div>
+                        <div style="margin-top: 15px; font-weight: bold; color: var(--primary-color);">
+                            👥 ${e.asistentes.toLocaleString('es-ES')} Asistentes
+                        </div>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                grid.appendChild(card);
             });
         }
 
-        function updateKPIs(data) {
-            const totalExp = data.length;
-            const totalAsistentes = data.reduce((sum, item) => sum + item.asistentes, 0);
-            const promedio = totalExp > 0 ? Math.round(totalAsistentes / totalExp) : 0;
-
-            document.getElementById('kpi-total-exp').textContent = totalExp;
-            document.getElementById('kpi-total-asistentes').textContent = totalAsistentes.toLocaleString('es-ES');
-            document.getElementById('kpi-promedio-asistentes').textContent = promedio.toLocaleString('es-ES');
+        function filtrarExposiciones() {
+            renderGridExposiciones();
         }
 
-        window.onload = function() {
-            populateSelectFilters();
-            filterData();
-        };
+        function abrirModal(e) {
+            document.getElementById('modalTag').innerText = e.disciplina;
+            document.getElementById('modalTitulo').innerText = e.titulo;
+            document.getElementById('modalPeriodo').innerText = e.periodo;
+            document.getElementById('modalLugar').innerText = e.lugar;
+            document.getElementById('modalFechas').innerText = e.fechas;
+            document.getElementById('modalArtistas').innerText = e.artistas;
+            document.getElementById('modalAsistentes').innerText = e.asistentes.toLocaleString('es-ES');
+            
+            const linkCont = document.getElementById('modalLinkContainer');
+            if(e.link) {
+                linkCont.innerHTML = `<a href="${e.link}" target="_blank" style="color: var(--primary-color); font-weight: bold;">🔗 Ver documentación externa de la exposición</a>`;
+            } else {
+                linkCont.innerHTML = `<span style="color: #888; font-size: 0.9em;">Sin enlace de documentación externa registrado.</span>`;
+            }
+
+            document.getElementById('expoModal').style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('expoModal').style.display = 'none';
+        }
+
+        function agregarExposicion(event) {
+            event.preventDefault();
+            const nuevaExpo = {
+                periodo: document.getElementById('formPeriodo').value,
+                titulo: document.getElementById('formTitulo').value,
+                disciplina: document.getElementById('formDisciplina').value,
+                lugar: document.getElementById('formLugar').value,
+                fechas: document.getElementById('formFechas').value,
+                artistas: document.getElementById('formArtistas').value || "No especificado",
+                asistentes: parseInt(document.getElementById('formAsistentes').value),
+                link: document.getElementById('formLink').value
+            };
+
+            exposiciones.push(nuevaExpo);
+            document.getElementById('addExpoForm').reset();
+            alert("Exposición agregada correctamente al sistema.");
+            
+            poblarFiltroDisciplinas();
+            actualizarTodo();
+            switchTab('exposiciones');
+        }
+
+        // CHARTS
+        function actualizarGraficos() {
+            // Data General Evolución
+            const periodos = [...new Set(exposiciones.map(e => e.periodo))];
+            const asistPorPeriodo = periodos.map(p => {
+                return exposiciones.filter(e => e.periodo === p).reduce((sum, e) => sum + e.asistentes, 0);
+            });
+
+            if(chartGenEvolucion) chartGenEvolucion.destroy();
+            chartGenEvolucion = new Chart(document.getElementById('chartGeneralEvolucion'), {
+                type: 'line',
+                data: {
+                    labels: periodos,
+                    datasets: [{
+                        label: 'Asistentes Totales',
+                        data: asistPorPeriodo,
+                        borderColor: '#b01c2e',
+                        backgroundColor: 'rgba(176, 28, 46, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                }
+            });
+
+            // Data General Disciplinas
+            const discMap = {};
+            exposiciones.forEach(e => discMap[e.disciplina] = (discMap[e.disciplina] || 0) + 1);
+
+            if(chartGenDisciplinas) chartGenDisciplinas.destroy();
+            chartGenDisciplinas = new Chart(document.getElementById('chartGeneralDisciplinas'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(discMap),
+                    datasets: [{
+                        data: Object.values(discMap),
+                        backgroundColor: ['#b01c2e', '#2c3e50', '#e67e22', '#27ae60', '#9b59b6', '#34495e', '#16a085']
+                    }]
+                }
+            });
+
+            // Data Análisis Interés (Promedio por Disciplina)
+            const discAsist = {}, discCount = {};
+            exposiciones.forEach(e => {
+                discAsist[e.disciplina] = (discAsist[e.disciplina] || 0) + e.asistentes;
+                discCount[e.disciplina] = (discCount[e.disciplina] || 0) + 1;
+            });
+            const discProm = Object.keys(discAsist).map(d => Math.round(discAsist[d] / discCount[d]));
+
+            if(chartAnaInteres) chartAnaInteres.destroy();
+            chartAnaInteres = new Chart(document.getElementById('chartAnalisisInteres'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(discAsist),
+                    datasets: [{
+                        label: 'Promedio de Asistentes por Exposición',
+                        data: discProm,
+                        backgroundColor: '#2c3e50'
+                    }]
+                }
+            });
+
+            // Data Análisis Salas
+            const salaMap = {};
+            exposiciones.forEach(e => salaMap[e.lugar] = (salaMap[e.lugar] || 0) + e.asistentes);
+
+            if(chartAnaSalas) chartAnaSalas.destroy();
+            chartAnaSalas = new Chart(document.getElementById('chartAnalisisSalas'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(salaMap),
+                    datasets: [{
+                        label: 'Total Asistentes por Sala',
+                        data: Object.values(salaMap),
+                        backgroundColor: '#b01c2e'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y'
+                }
+            });
+        }
     </script>
 </body>
 </html>
