@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análisis Histórico de Exposiciones</title>
+    <title>Análisis Histórico de Exposiciones - Las Rozas</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f5f7; margin: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; color: #333; }
         header { background-color: white; padding: 20px 40px; border-bottom: 1px solid #ddd; }
         h1 { color: #9c1b22; margin: 0; font-size: 24px; }
         .subtitle { color: #666; font-size: 14px; margin-top: 5px; }
@@ -14,15 +14,26 @@
         .tab.active { color: #9c1b22; border-bottom-color: #9c1b22; }
         .container { padding: 40px; display: none; }
         .container.active { display: block; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 150px; object-fit: cover; background: #eaeaea; }
-        .card-content { padding: 15px; }
-        .tag { display: inline-block; background: #eef2f5; color: #333; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
-        .admin-form { background: white; padding: 20px; border-radius: 8px; max-width: 600px; }
-        input, select, button { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        /* Grid y tarjetas */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
+        .card-gallery { display: flex; overflow-x: auto; height: 160px; background: #eaeaea; }
+        .card-gallery img { height: 100%; width: 100%; object-fit: cover; flex-shrink: 0; }
+        .card-content { padding: 15px; flex-grow: 1; }
+        .tag { display: inline-block; background: #eef2f5; color: #9c1b22; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        
+        /* Formularios y Botones */
+        .admin-form { background: white; padding: 25px; border-radius: 8px; max-width: 650px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        input, select, textarea, button { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { background-color: #9c1b22; color: white; border: none; cursor: pointer; font-weight: bold; }
         button:hover { background-color: #7a151b; }
+        .btn-edit { background-color: #4a5568; margin-top: 10px; }
+        .btn-edit:hover { background-color: #2d3748; }
+
+        /* Filtros */
+        .filter-container { display: flex; gap: 15px; margin-bottom: 25px; }
+        .filter-container input, .filter-container select { margin-bottom: 0; }
     </style>
 </head>
 <body>
@@ -33,52 +44,61 @@
     </header>
 
     <div class="tabs">
-        <div class="tab" onclick="switchTab('general')">General</div>
-        <div class="tab active" onclick="switchTab('exposiciones')">Exposiciones</div>
-        <div class="tab" onclick="switchTab('informacion')">Información</div>
-        <div class="tab" onclick="switchTab('analisis')">Análisis</div>
-        <div class="tab" onclick="switchTab('admin')">Administración 🔒</div>
+        <div class="tab active" onclick="switchTab('exposiciones', this)">Exposiciones</div>
+        <div class="tab" onclick="switchTab('admin', this)">Administración 🔒</div>
     </div>
 
-    <!-- Vista de Exposiciones (image_13f843.png) -->
+    <!-- Catálogo de Exposiciones -->
     <div id="exposiciones" class="container active">
         <h2>Catálogo de Exposiciones</h2>
-        <div class="grid" id="catalogo">
-            <!-- Los datos se inyectarán aquí desde Firebase -->
-        </div>
-    </div>
-
-    <!-- Vista de Administración -->
-    <div id="admin" class="container">
-        <h2>Añadir / Editar Exposición</h2>
-        <div class="admin-form">
-            <input type="text" id="titulo" placeholder="Título de la exposición (Ej: Pedro Palleiro. La ruina moderna)">
-            <select id="disciplina">
+        <div class="filter-container">
+            <input type="text" id="searchInput" onkeyup="filtrarExposiciones()" placeholder="Buscar por título o disciplina...">
+            <select id="disciplineFilter" onchange="filtrarExposiciones()">
+                <option value="">Todas las disciplinas</option>
                 <option value="Pintura">Pintura</option>
-                <option value="Grabado">Grabado</option>
                 <option value="Fotografía">Fotografía</option>
+                <option value="Grabado">Grabado</option>
                 <option value="Escultura">Escultura</option>
                 <option value="Textil">Textil</option>
+                <option value="Moda">Moda</option>
+                <option value="Varios">Varios</option>
+                <option value="Dibujo">Dibujo</option>
             </select>
-            <input type="text" id="sala" placeholder="Sala (Ej: Auditorio, Sala Maruja Mallo)">
-            <input type="text" id="fechas" placeholder="Fechas (Ej: 14/12 - 15/01)">
-            <input type="number" id="asistentes" placeholder="Número de asistentes">
-            <label style="font-size:14px; color:#555;">Subir imágenes de la exposición:</label>
-            <input type="file" id="imagenes" multiple accept="image/*">
-            <button onclick="guardarExposicion()">Guardar Exposición</button>
         </div>
+        <div class="grid" id="catalogo"></div>
     </div>
 
-    <!-- Vista General (image_13f845.png) -->
-    <div id="general" class="container">
-        <h2>Visión General de la Actividad Expositiva</h2>
-        <p>Plataforma para el seguimiento e inventario de las exposiciones temporales de artes visuales reportadas en las memorias oficiales de la Fundación Municipal de Cultura de Las Rozas.</p>
-        <img src="image_13f845.png" alt="Dashboard Estadístico" style="max-width: 100%; border-radius: 8px;">
+    <!-- Panel de Administración -->
+    <div id="admin" class="container">
+        <h2 id="form-title">Añadir Nueva Exposición</h2>
+        <div class="admin-form">
+            <input type="hidden" id="expo-key">
+            <label>Título de la exposición:</label>
+            <input type="text" id="titulo" placeholder="Ej: Marisa Cebrián. Nueva York-Londres - Madrid" required>
+            
+            <label>Disciplina:</label>
+            <input type="text" id="disciplina" placeholder="Ej: Pintura, Fotografía, Escultura..." required>
+            
+            <label>Lugar / Sala:</label>
+            <input type="text" id="sala" placeholder="Ej: Sala Maruja Mallo, Auditorio..." required>
+            
+            <label>Fechas:</label>
+            <input type="text" id="fechas" placeholder="Ej: 14/12 - 15/01" required>
+            
+            <label>Asistentes:</label>
+            <input type="number" id="asistentes" placeholder="Ej: 150" required>
+
+            <label>Imágenes (puedes seleccionar varias):</label>
+            <input type="file" id="imagenes" multiple accept="image/*">
+            
+            <button id="btn-save" onclick="guardarExposicion()">Guardar Exposición</button>
+            <button id="btn-cancel" style="display:none; background-color:#718096;" onclick="cancelarEdicion()">Cancelar Edición</button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -96,70 +116,228 @@
         const db = getDatabase(app);
         const storage = getStorage(app);
 
-        // Carga inicial de datos históricos exactos en la web
-        const datosHistoricos = [
-            { titulo: "Marisa Cebrián. Nueva York-Londres - Madrid", disciplina: "Pintura", sala: "Auditorio", fechas: "14/12 - 15/01", asistentes: 150 }, /*[cite: 4] */
-            { titulo: "Ganadores y seleccionados del XXIV Certamen de grabado José Caballero", disciplina: "Grabado", sala: "Sala Maruja Mallo", fechas: "20/12 - 25/01", asistentes: 300 }, /*[cite: 4] */
-            { titulo: "Asociación Cámara en Mano. Imágenes surrealistas", disciplina: "Fotografía", sala: "Auditorio", fechas: "14/02 - 10/02", asistentes: 150 }, /*[cite: 4] */
-            { titulo: "Reasentados, 14 historias del Gueto de Varsovia", disciplina: "Fotografía", sala: "Auditorio", fechas: "25/01 - 31/01", asistentes: 50 }, /*[cite: 4] */
-            { titulo: "Tirando del hilo. Lenguajes textiles en el arte contemporáneo.", disciplina: "Textil", sala: "Sala Maruja Mallo", fechas: "14 abr - 4 may", asistentes: 420 } /*[cite: 1] */
+        // Registro Histórico Oficial Completo extraído de las Memorias Técnicas (2023-2026)
+        const datosHistoricosIniciales = [
+            { id: "h1", titulo: "Marisa Cebrián. Nueva York-Londres - Madrid", disciplina: "Pintura", sala: "Auditorio", fechas: "14/12 - 15/01", asistentes: 150 },
+            { id: "h2", titulo: "Ganadores y seleccionados del XXIV Certamen de grabado José Caballero", disciplina: "Grabado", sala: "Sala Maruja Mallo", fechas: "20/12 - 25/01", asistentes: 300 },
+            { id: "h3", titulo: "Asociación Cámara en Mano. Imágenes surrealistas", disciplina: "Fotografía", sala: "Auditorio", fechas: "14/02 - 10/02", asistentes: 150 },
+            { id: "h4", titulo: "Reasentados, 14 historias del Gueto de Varsovia", disciplina: "Fotografía", sala: "Auditorio", fechas: "25/01 - 31/01", asistentes: 50 },
+            { id: "h5", titulo: "II Certamen fotográfico Asociación Cámara en Mano", disciplina: "Fotografía", sala: "Auditorio", fechas: "01/02 - 29/02", asistentes: 150 },
+            { id: "h6", titulo: "Juan Salvago. Lugares imaginarios", disciplina: "Pintura", sala: "Sala Maruja Mallo", fechas: "08/02 - 25/03", asistentes: 420 },
+            { id: "h7", titulo: "36º Concurso de Fotografía 'Jesús y Adán'", disciplina: "Fotografía", sala: "Sala Díaz Caneja", fechas: "20/02 - 08/03", asistentes: 50 },
+            { id: "h8", titulo: "Exvotos. Alumnos de la asignatura Modelado del natural UCM", disciplina: "Escultura", sala: "Auditorio", fechas: "14/03 - 14/04", asistentes: 210 },
+            { id: "h9", titulo: "José Luis Sanz. Ecos de Japón", disciplina: "Pintura, grabado y dibujo", sala: "Sala Díaz Caneja", fechas: "21/03 - 21/04", asistentes: 80 },
+            { id: "h10", titulo: "Encuentro con el objeto. Escultura contemporánea", disciplina: "Escultura", sala: "Sala Maruja Mallo", fechas: "01/04 - 21/04", asistentes: 300 },
+            { id: "h11", titulo: "José Andrés Fernández Cornejo. Kybernetike", disciplina: "Pintura", sala: "Auditorio", fechas: "18/04 - 23/05", asistentes: 120 },
+            { id: "h12", titulo: "Fernando Luján. Redes", disciplina: "Fotografía", sala: "Sala Maruja Mallo", fechas: "25/04 - 25/05", asistentes: 290 },
+            { id: "h13", titulo: "1975. Cambio de tercio", disciplina: "Fotografía", sala: "Sala Maruja Mallo", fechas: "30/05 - 19/06", asistentes: 450 },
+            { id: "h14", titulo: "Fragmentos. Universidad de Mayores de la UCM", disciplina: "Escultura", sala: "Auditorio", fechas: "06/06 - 30/06", asistentes: 280 },
+            { id: "h15", titulo: "Creatividad infantil y Pintura Infantil. Dibujo y Pintura Adultos", disciplina: "Pintura", sala: "Centro Cultural de Las Matas", fechas: "18/06 - 28/06", asistentes: 200 },
+            { id: "h16", titulo: "Creatividad infantil y Pintura Infantil", disciplina: "Pintura", sala: "Sala Díaz Caneja", fechas: "30/05 - 13/06", asistentes: 250 },
+            { id: "h17", titulo: "Talleres Municipales", disciplina: "Varias", sala: "CCPR", fechas: "11/SEP - 24/SEP", asistentes: 250 },
+            { id: "h18", titulo: "Vive tu sueño", disciplina: "Pintura", sala: "Auditorio", fechas: "19/SEP - 30/SEP", asistentes: 300 },
+            { id: "h19", titulo: "Taller municipal de Tapices", disciplina: "Tapices", sala: "Sala Díaz Caneja CCPR", fechas: "3 OCT - 25 OCT", asistentes: 150 },
+            { id: "h20", titulo: "Félix Arellano. Flor caníbal", disciplina: "Pintura y escultura", sala: "Auditorio", fechas: "4 OCT - 31 OCT", asistentes: 290 },
+            { id: "h21", titulo: "Juan Vicente Muñoz. Nomofobias", disciplina: "Escultura", sala: "Sala Maruja Mallo CCPR", fechas: "17 OCT - 8 DIC", asistentes: 850 },
+            { id: "h22", titulo: "Fotografía de proyectos. Seis + cuatro visiones", disciplina: "Fotografía", sala: "Sala Díaz Caneja", fechas: "7 NOV - 30 NOV", asistentes: 210 },
+            { id: "h23", titulo: "Carlos González Alonso. Un instante en movimiento", disciplina: "Pintura", sala: "Auditorio", fechas: "8 NOV - 8 DIC", asistentes: 120 },
+            { id: "h24", titulo: "Asociación Esfumato. Transparencias", disciplina: "Pintura", sala: "Auditorio", fechas: "12 DIC - 12 ENE", asistentes: 250 },
+            { id: "h25", titulo: "Asociación Cámara en Mano. Las horas mágicas del sol", disciplina: "Fotografía", sala: "Sala Díaz Caneja", fechas: "12 DIC - 12 ENE", asistentes: 250 },
+            { id: "h26", titulo: "Ganadores y seleccionados Certamen José Caballero", disciplina: "Grabado", sala: "Sala Maruja Mallo", fechas: "19 DIC - 20 ENE", asistentes: 280 },
+            { id: "h27", titulo: "III Certamen Fotográfico Asociación Cámara en Mano", disciplina: "Fotografía", sala: "Sala Auditorio", fechas: "23 ENE - 13 FEB", asistentes: 120 },
+            { id: "h28", titulo: "Alejandro Fernández Sáez (Kalifa). Poco tengo que decir", disciplina: "Pintura y dibujo", sala: "Sala Maruja Mallo", fechas: "30 ENE - 2 MAR", asistentes: 300 },
+            { id: "h29", titulo: "Lucía Rodríguez. Hilo de acero y bambú", disciplina: "Fotografía", sala: "Sala J. M. Díaz Caneja", fechas: "30 ENE - 2 MAR", asistentes: 120 },
+            { id: "h30", titulo: "Carmen la Griega. Llévame donde haya vida", disciplina: "Pintura, dibujo y vídeo", sala: "Sala Maruja Mallo", fechas: "6 MAR - 6 ABR", asistentes: 850 },
+            { id: "h31", titulo: "Madrileños centenarios. La sabiduría de la longevidad", disciplina: "Fotografía", sala: "Sala Auditorio", fechas: "19 MAR - 7 ABR", asistentes: 1200 },
+            { id: "h32", titulo: "37º Certamen de Fotografía Jesús y Adán", disciplina: "Fotografía", sala: "Sala J. M. Díaz Caneja", fechas: "20 MAR - 3 ABR", asistentes: 150 },
+            { id: "h33", titulo: "Exposición 'Olimpiadas Escolares'", disciplina: "Varios", sala: "Sala Auditorio", fechas: "4 ABR", asistentes: 230 },
+            { id: "h34", titulo: "Fashion Show", disciplina: "Moda", sala: "Sala Auditorio", fechas: "7 MAR", asistentes: 300 },
+            { id: "h35", titulo: "Tirando del hilo. Lenguajes textiles en el arte contemporáneo", disciplina: "Textil", sala: "Sala Maruja Mallo", fechas: "14 abr - 4 may", asistentes: 420 },
+            { id: "h36", titulo: "Asociación Cámara en Mano. Visiones textiles", disciplina: "Fotografía", sala: "Sala J. M. Díaz Caneja", fechas: "10 abr - 10 may", asistentes: 150 },
+            { id: "h37", titulo: "Pedro Palleiro. La ruina moderna", disciplina: "Fotografía", sala: "Sala Auditorio", fechas: "11 abr - 11 may", asistentes: 320 },
+            { id: "h38", titulo: "India Toctli. El otro idioma", disciplina: "Pintura", sala: "Sala Maruja Mallo", fechas: "14 may - 18 jun", asistentes: 560 },
+            { id: "h39", titulo: "Exvotos", disciplina: "Escultura", sala: "Sala Auditorio", fechas: "19 may - 6 jun", asistentes: 120 },
+            { id: "h40", titulo: "Mariano Cobo. Gotas", disciplina: "Pintura y escultura", sala: "Sala Auditorio", fechas: "13 jun - 20 jul", asistentes: 210 },
+            { id: "h41", titulo: "Talleres infantiles Centro Cultural Pérez de la Riva", disciplina: "Creatividad", sala: "Sala J. M. Díaz Caneja", fechas: "28 may - 11 junio", asistentes: 200 },
+            { id: "h42", titulo: "Talleres infantiles Entremontes", disciplina: "Creatividad y pintura", sala: "Centro Cultural Entremontes", fechas: "5 may - 23 may", asistentes: 100 },
+            { id: "h43", titulo: "Talleres adultos Entremontes", disciplina: "Vidrio, restauración y pintura", sala: "Centro Cultural Entremontes", fechas: "28 may - 16 jun", asistentes: 120 },
+            { id: "h44", titulo: "Talleres Centro Cultural Las Matas", disciplina: "Pintura, dibujo y creatividad", sala: "Centro Cultural Las Matas", fechas: "16 jun - 22 jun", asistentes: 150 },
+            { id: "h45", titulo: "Marina Reina. Tras el umbral: Relatos de una estancia", disciplina: "Pintura y cerámica", sala: "Sala Maruja Mallo", fechas: "9 oct - 6 nov", asistentes: 620 },
+            { id: "h46", titulo: "José Luis García de Ceca. Acuarelas", disciplina: "Pintura", sala: "Sala J. M. Díaz Caneja", fechas: "9 oct - 21 nov", asistentes: 450 },
+            { id: "h47", titulo: "Vicente Sarrión. A través de los años", disciplina: "Pintura", sala: "Sala Auditorio", fechas: "3 oct - 31 oct", asistentes: 320 },
+            { id: "h48", titulo: "Sara García. Un vaso de agua salada", disciplina: "Varios", sala: "Sala Maruja Mallo", fechas: "13 nov - 11 dic", asistentes: 560 },
+            { id: "h49", titulo: "Fotografía de proyectos. Entorno íntimo", disciplina: "Fotografía", sala: "Sala Auditorio", fechas: "7 nov - 3 dic", asistentes: 790 },
+            { id: "h50", titulo: "XXVI Certamen de Grabado José Caballero", disciplina: "Grabado", sala: "Sala Maruja Mallo", fechas: "18 dic - 20 ene", asistentes: 410 },
+            { id: "h51", titulo: "Asociación Esfumato. 20 años, 20 miradas", disciplina: "Pintura", sala: "Sala J. M. Díaz Caneja", fechas: "11 dic - 15 ene", asistentes: 200 },
+            { id: "h52", titulo: "Imágenes de la Navidad en el Archivo ABC", disciplina: "Fotografía", sala: "Calle", fechas: "15 dic - 3 abr", asistentes: 1100 },
+            { id: "h53", titulo: "IV Certamen fotográfico Cámara en Mano", disciplina: "Fotografía", sala: "Sala J. M. Díaz Caneja", fechas: "15 ene - 15 feb", asistentes: 350 },
+            { id: "h54", titulo: "Mateo García Menéndez. Las formas del hábito", disciplina: "Pintura", sala: "Sala Auditorio", fechas: "24 ene - 26 feb", asistentes: 1100 },
+            { id: "h55", titulo: "Eduardo Arroyo: la creación de un artista", disciplina: "Dibujo", sala: "Sala Maruja Mallo", fechas: "29 ene - 19 feb", asistentes: 850 },
+            { id: "h56", titulo: "Ecologías del colapso", disciplina: "Varios", sala: "Sala Maruja Mallo", fechas: "29 feb - 20 may", asistentes: 650 },
+            { id: "h57", titulo: "Arquitectura moderna de Madrid. Fotografías de Ana Amado", disciplina: "Fotografía", sala: "Sala J. M. Díaz Caneja", fechas: "29 feb - 20 may", asistentes: 290 },
+            { id: "h58", titulo: "Ex Votos. Alumnos de escultura y modelado UCM", disciplina: "Escultura", sala: "Sala Auditorio", fechas: "4 mar - 14 mar", asistentes: 200 },
+            { id: "h59", titulo: "Música popular: una visión fotográfica", disciplina: "Fotografía", sala: "Sala Auditorio", fechas: "20 mar - 12 abr", asistentes: 253 }
         ];
 
-        window.switchTab = function(tabId) {
+        let exposicionesData = {};
+
+        // Cambiar entre pestañas
+        window.switchTab = function(tabId, el) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            el.classList.add('active');
         }
 
-        window.guardarExposicion = async function() {
-            const titulo = document.getElementById('titulo').value;
-            const disciplina = document.getElementById('disciplina').value;
-            const sala = document.getElementById('sala').value;
-            const fechas = document.getElementById('fechas').value;
-            const asistentes = document.getElementById('asistentes').value;
-            const archivos = document.getElementById('imagenes').files;
-
-            let urlsImagenes = [];
-            
-            // Lógica para cargar múltiples imágenes
-            for (let i = 0; i < archivos.length; i++) {
-                const archivo = archivos[i];
-                const imgRef = storageRef(storage, 'exposiciones/' + Date.now() + '_' + archivo.name);
-                await uploadBytes(imgRef, archivo);
-                const url = await getDownloadURL(imgRef);
-                urlsImagenes.push(url);
-            }
-
-            const nuevaExpo = { titulo, disciplina, sala, fechas, asistentes, imagenes: urlsImagenes };
-            push(ref(db, 'exposiciones'), nuevaExpo);
-            alert('Exposición guardada correctamente para todos los usuarios.');
-            document.querySelector('.admin-form').reset();
-        }
-
-        // Sincronización en tiempo real para todos los ordenadores
+        // Cargar y Sincronizar exposiciones desde Firebase
         onValue(ref(db, 'exposiciones'), (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                // Si la Realtime Database está vacía, se inicializa con los datos históricos exactos
+                datosHistoricosIniciales.forEach(item => {
+                    const newRef = push(ref(db, 'exposiciones'));
+                    set(newRef, item);
+                });
+            } else {
+                exposicionesData = data;
+                renderCatalogo(data);
+            }
+        });
+
+        // Renderizar catálogo
+        function renderCatalogo(data) {
             const catalogo = document.getElementById('catalogo');
             catalogo.innerHTML = '';
-            
-            const data = snapshot.val() || datosHistoricos; 
-            const arrayDatos = snapshot.val() ? Object.values(data) : datosHistoricos;
 
-            arrayDatos.forEach(expo => {
-                const imgPortada = (expo.imagenes && expo.imagenes.length > 0) ? expo.imagenes[0] : 'image_13f843.png';
+            Object.keys(data).forEach(key => {
+                const expo = data[key];
+                
+                // Generar imágenes
+                let imagenesHTML = '';
+                if (expo.imagenes && expo.imagenes.length > 0) {
+                    expo.imagenes.forEach(url => {
+                        imagenesHTML += `<img src="${url}" alt="Imagen exposición">`;
+                    });
+                } else {
+                    imagenesHTML = `<div style="display:flex;align-items:center;justify-content:center;width:100%;color:#aaa;">Sin Imágenes</div>`;
+                }
+
                 catalogo.innerHTML += `
-                    <div class="card">
-                        <img src="${imgPortada}" alt="Imagen de ${expo.titulo}">
+                    <div class="card" data-titulo="${expo.titulo.toLowerCase()}" data-disciplina="${expo.disciplina}">
+                        <div class="card-gallery">${imagenesHTML}</div>
                         <div class="card-content">
                             <span class="tag">${expo.disciplina}</span>
                             <h3 style="margin: 0 0 10px 0; font-size: 16px;">${expo.titulo}</h3>
-                            <p style="margin: 0; font-size: 14px; color: #666;"><strong>Sala:</strong> ${expo.sala}</p>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;"><strong>Fechas:</strong> ${expo.fechas}</p>
+                            <p style="margin: 3px 0; font-size: 13px; color: #666;"><strong>Sala:</strong> ${expo.sala}</p>
+                            <p style="margin: 3px 0; font-size: 13px; color: #666;"><strong>Fechas:</strong> ${expo.fechas}</p>
+                            <p style="margin: 3px 0; font-size: 13px; color: #666;"><strong>Asistentes:</strong> ${expo.asistentes}</p>
+                            <button class="btn-edit" onclick="cargarEdicion('${key}')">Editar Exposición</button>
                         </div>
                     </div>
                 `;
             });
-        });
+        }
+
+        // Guardar o Actualizar Exposición
+        window.guardarExposicion = async function() {
+            const key = document.getElementById('expo-key').value;
+            const titulo = document.getElementById('titulo').value;
+            const disciplina = document.getElementById('disciplina').value;
+            const sala = document.getElementById('sala').value;
+            const fechas = document.getElementById('fechas').value;
+            const asistentes = parseInt(document.getElementById('asistentes').value) || 0;
+            const archivos = document.getElementById('imagenes').files;
+
+            if (!titulo || !disciplina || !sala || !fechas) {
+                alert("Por favor, rellena todos los campos obligatorios.");
+                return;
+            }
+
+            let urlsImagenes = [];
+            if (key && exposicionesData[key] && exposicionesData[key].imagenes) {
+                urlsImagenes = exposicionesData[key].imagenes; // Mantener existentes si no se sobreescriben
+            }
+
+            // Subir nuevas imágenes a Firebase Storage si existen
+            if (archivos.length > 0) {
+                urlsImagenes = [];
+                for (let i = 0; i < archivos.length; i++) {
+                    const archivo = archivos[i];
+                    const imgRef = storageRef(storage, 'exposiciones/' + Date.now() + '_' + archivo.name);
+                    await uploadBytes(imgRef, archivo);
+                    const url = await getDownloadURL(imgRef);
+                    urlsImagenes.push(url);
+                }
+            }
+
+            const objetoExpo = { titulo, disciplina, sala, fechas, asistentes, imagenes: urlsImagenes };
+
+            if (key) {
+                // Edición de exposición existente
+                await set(ref(db, 'exposiciones/' + key), objetoExpo);
+                alert('Exposición editada y actualizada en tiempo real.');
+            } else {
+                // Inserción de nueva exposición
+                await push(ref(db, 'exposiciones'), objetoExpo);
+                alert('Nueva exposición guardada correctamente.');
+            }
+
+            cancelarEdicion();
+        };
+
+        // Cargar datos en el formulario para editar
+        window.cargarEdicion = function(key) {
+            const expo = exposicionesData[key];
+            document.getElementById('expo-key').value = key;
+            document.getElementById('titulo').value = expo.titulo;
+            document.getElementById('disciplina').value = expo.disciplina;
+            document.getElementById('sala').value = expo.sala;
+            document.getElementById('fechas').value = expo.fechas;
+            document.getElementById('asistentes').value = expo.asistentes;
+
+            document.getElementById('form-title').innerText = "Editar Exposición";
+            document.getElementById('btn-save').innerText = "Guardar Cambios";
+            document.getElementById('btn-cancel').style.display = "block";
+
+            // Cambiar a la pestaña de administración
+            switchTab('admin', document.querySelectorAll('.tab')[1]);
+        };
+
+        // Cancelar o resetear el formulario
+        window.cancelarEdicion = function() {
+            document.getElementById('expo-key').value = '';
+            document.getElementById('titulo').value = '';
+            document.getElementById('disciplina').value = '';
+            document.getElementById('sala').value = '';
+            document.getElementById('fechas').value = '';
+            document.getElementById('asistentes').value = '';
+            document.getElementById('imagenes').value = '';
+
+            document.getElementById('form-title').innerText = "Añadir Nueva Exposición";
+            document.getElementById('btn-save').innerText = "Guardar Exposición";
+            document.getElementById('btn-cancel').style.display = "none";
+        };
+
+        // Filtro de exposiciones
+        window.filtrarExposiciones = function() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const selectedDiscipline = document.getElementById('disciplineFilter').value;
+            const cards = document.querySelectorAll('.card');
+
+            cards.forEach(card => {
+                const titulo = card.getAttribute('data-titulo');
+                const disciplina = card.getAttribute('data-disciplina');
+
+                const coincideSearch = titulo.includes(searchText) || disciplina.toLowerCase().includes(searchText);
+                const coincideDiscipline = selectedDiscipline === "" || disciplina.includes(selectedDiscipline);
+
+                if (coincideSearch && coincideDiscipline) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        };
     </script>
 </body>
 </html>
