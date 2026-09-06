@@ -359,7 +359,7 @@
         <!-- TAB GENERAL -->
         <section id="tab-general" class="tab-content active">
             <h2>Visión General de la Actividad Expositiva</h2>
-            <p>Plataforma para el seguimiento e inventario de las exposiciones temporales de artes visuales reportadas en las memorias oficiales de la Fundación Municipal de Cultura de Las Rozas[cite: 1, 2, 3, 4, 5, 6, 7, 8].</p>
+            <p>Plataforma para el seguimiento e inventario de las exposiciones temporales de artes visuales reportadas en las memorias oficiales de la Fundación Municipal de Cultura de Las Rozas.</p>
             
             <div class="kpi-grid">
                 <div class="kpi-card">
@@ -433,11 +433,11 @@
             <div style="background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border-color);">
                 <div id="infoDisplay" style="line-height: 1.6; color: #444;">
                     <h3>Sobre esta plataforma</h3>
-                    <p>Esta herramienta ha sido desarrollada como un espacio técnico para la recopilación, estructuración y análisis de datos de las exposiciones temporales celebradas en las salas municipales del Ayuntamiento de Las Rozas de Madrid[cite: 1, 2, 3, 4, 5, 6, 7, 8].</p>
-                    <p>Entre los espacios analizados se incluyen la <strong>Sala Maruja Mallo</strong>, la <strong>Sala J. M. Díaz Caneja</strong> (Centro Cultural Pérez de la Riva), la <strong>Sala Auditorio Joaquín Rodrigo</strong> y espacios exteriores habilitados[cite: 1, 2, 3, 4, 5, 6, 7, 8].</p>
+                    <p>Esta herramienta ha sido desarrollada como un espacio técnico para la recopilación, estructuración y análisis de datos de las exposiciones temporales celebradas en las salas municipales del Ayuntamiento de Las Rozas de Madrid.</p>
+                    <p>Entre los espacios analizados se incluyen la <strong>Sala Maruja Mallo</strong>, la <strong>Sala J. M. Díaz Caneja</strong> (Centro Cultural Pérez de la Riva), la <strong>Sala Auditorio Joaquín Rodrigo</strong> y espacios exteriores habilitados.</p>
                     <h3>Objetivos</h3>
                     <ul>
-                        <li>Garantizar el registro riguroso de asistencia y distribución geográfica de la oferta cultural[cite: 1, 2, 3, 4, 5, 6, 7, 8].</li>
+                        <li>Garantizar el registro riguroso de asistencia y distribución geográfica de la oferta cultural.</li>
                         <li>Servir como soporte analítico para la toma de decisiones en programaciones futuras.</li>
                         <li>Ofrecer un catálogo interactivo con ficha técnica e información detallada de cada muestra.</li>
                     </ul>
@@ -537,7 +537,6 @@
                             </div>
                         </div>
 
-                        <!-- NUEVO CAMPO: INFORMACIÓN ADICIONAL COMPLETA -->
                         <div class="form-group">
                             <label for="formInformacionAdicional">Información Adicional / Descripción Detallada</label>
                             <textarea id="formInformacionAdicional" rows="4" placeholder="Introduce aquí detalles curatoriales, historia, catálogo, contexto o texto explicativo de la muestra..."></textarea>
@@ -605,16 +604,32 @@
         </div>
     </div>
 
-    <script>
-        // CONTRASEÑA DE ADMINISTRACIÓN
+    <!-- INTEGRACIÓN FIREBASE REALTIME DATABASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Configuración de Firebase enviada
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOgkw80F8reopQh9UPg3lewgX5zrg8_ok",
+            authDomain: "lasrozas-exposiciones.firebaseapp.com",
+            databaseURL: "https://lasrozas-exposiciones-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "lasrozas-exposiciones",
+            storageBucket: "lasrozas-exposiciones.firebasestorage.app",
+            messagingSenderId: "193566960192",
+            appId: "1:193566960192:web:ca5114ab332dc0dc2d4da5",
+            measurementId: "G-GTYH06XMRK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
         const ADMIN_PASS = "admin1234";
         let isAdminAuthenticated = false;
-
         const DEFAULT_IMG = "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=600&q=80";
 
-        // DATOS EXTRAÍDOS RIGUROSAMENTE DE LAS MEMORIAS TÉCNICAS Y ECONÓMICAS
-        let exposiciones = [
-            // Ene-Mar 2024
+        // Datos iniciales de resguardo por si la base de datos está vacía
+        const exposicionesIniciales = [
             { id: 1, periodo: "Ene-Mar 2024", titulo: "Marisa Cebrián. Nueva York-Londres - Madrid", disciplina: "Pintura", lugar: "Auditorio", fechas: "14/12 - 15/01", artistas: "Marisa Cebrián / Ayto. Las Rozas", asistentes: 150, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición de pintura de la artista Marisa Cebrián con paisajes de Nueva York, Londres y Madrid." },
             { id: 2, periodo: "Ene-Mar 2024", titulo: "Ganadores y seleccionados del XXIV Certamen de grabado José Caballero", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "20/12 - 25/01", artistas: "Varios artistas / Ayto. Las Rozas", asistentes: 300, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra con las obras ganadoras y seleccionadas en el XXIV Certamen de Grabado José Caballero." },
             { id: 3, periodo: "Ene-Mar 2024", titulo: "Asociación Cámara en Mano. Imágenes surrealistas", disciplina: "Fotografía", lugar: "Auditorio", fechas: "14/02 - 10/02", artistas: "Asociación Cámara en Mano", asistentes: 150, link: "", imagen: DEFAULT_IMG, infoAdicional: "Imágenes surrealistas elaboradas por los miembros de la Asociación Cámara en Mano." },
@@ -624,8 +639,6 @@
             { id: 7, periodo: "Ene-Mar 2024", titulo: "36º Concurso de Fotografía 'Jesús y Adán'", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "20/02 - 08/03", artistas: "Concejalía de Juventud", asistentes: 50, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra de las fotografías presentadas al 36º Concurso de Fotografía Jesús y Adán de la Concejalía de Juventud." },
             { id: 8, periodo: "Ene-Mar 2024", titulo: "Exvotos. Alumnos de 'Modelado del natural' (UCM)", disciplina: "Escultura", lugar: "Auditorio", fechas: "14/03 - 14/04", artistas: "Alumnos UCM Bellas Artes", asistentes: 210, link: "", imagen: DEFAULT_IMG, infoAdicional: "Esculturas elaboradas por los alumnos de Modelado del Natural del Grado en Bellas Artes de la UCM." },
             { id: 9, periodo: "Ene-Mar 2024", titulo: "José Luis Sanz. Ecos de Japón", disciplina: "Pintura, grabado y dibujo", lugar: "Sala Díaz Caneja", fechas: "21/03 - 21/04", artistas: "José Luis Sanz", asistentes: 80, link: "", imagen: DEFAULT_IMG, infoAdicional: "Colección multidisciplinar de pintura, grabado y dibujo inspirada en la cultura y tradición japonesa." },
-
-            // Abr-Jun 2024
             { id: 10, periodo: "Abr-Jun 2024", titulo: "Encuentro con el objeto. Escultura contemporánea (Red Itiner)", disciplina: "Escultura", lugar: "Sala Maruja Mallo", fechas: "01/04 - 21/04", artistas: "Red Itiner / CAM", asistentes: 300, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición itinerante de la Red Itiner de la Comunidad de Madrid sobre escultura contemporánea." },
             { id: 11, periodo: "Abr-Jun 2024", titulo: "José Andrés Fernández Cornejo. Kybernetike", disciplina: "Pintura", lugar: "Auditorio", fechas: "18/04 - 23/05", artistas: "José Andrés Fernández Cornejo", asistentes: 120, link: "", imagen: DEFAULT_IMG, infoAdicional: "Proyecto pictórico de José Andrés Fernández Cornejo sobre el arte de gobernar la nave." },
             { id: 12, periodo: "Abr-Jun 2024", titulo: "Fernando Luján. Redes", disciplina: "Fotografía", lugar: "Sala Maruja Mallo", fechas: "25/04 - 25/05", artistas: "Fernando Luján", asistentes: 290, link: "", imagen: DEFAULT_IMG, infoAdicional: "Serie fotográfica del autor Fernando Luján centrada en entramados y estructuras visuales." },
@@ -633,12 +646,8 @@
             { id: 14, periodo: "Abr-Jun 2024", titulo: "Fragmentos. Universidad de Mayores UCM", disciplina: "Escultura", lugar: "Sala Auditorio", fechas: "06/06 - 30/06", artistas: "Universidad de Mayores UCM", asistentes: 280, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición colectiva de esculturas realizadas por la Universidad de Mayores de la UCM." },
             { id: 15, periodo: "Abr-Jun 2024", titulo: "Creatividad infantil y Pintura Adultos", disciplina: "Pintura", lugar: "CC Las Matas", fechas: "18/06 - 28/06", artistas: "Alumnos Talleres Las Matas", asistentes: 200, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra fin de curso de los talleres de pintura del Centro Cultural Las Matas Marga Gil Roësset." },
             { id: 16, periodo: "Abr-Jun 2024", titulo: "Creatividad infantil / Pintura Infantil", disciplina: "Pintura", lugar: "Sala Díaz Caneja", fechas: "30/05 - 13/06", artistas: "Alumnos Talleres Municipales", asistentes: 250, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra fin de curso de los talleres municipales infantiles." },
-
-            // Jul-Sep 2024
             { id: 17, periodo: "Jul-Sep 2024", titulo: "Muestra Talleres Municipales", disciplina: "Varios", lugar: "CCPR", fechas: "11/SEP - 24/SEP", artistas: "Alumnos Talleres Municipales", asistentes: 250, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición colectiva con trabajos de diversas disciplinas elaborados en los talleres municipales." },
             { id: 18, periodo: "Jul-Sep 2024", titulo: "Vive tu sueño", disciplina: "Pintura", lugar: "Auditorio", fechas: "19/SEP - 30/SEP", artistas: "Fundación Colisée", asistentes: 300, link: "", imagen: DEFAULT_IMG, infoAdicional: "Organizada en colaboración con la Fundación Colisée dedicada al cuidado de personas mayores." },
-
-            // Oct-Dic 2024
             { id: 19, periodo: "Oct-Dic 2024", titulo: "Taller municipal de Tapices", disciplina: "Textil", lugar: "Sala Díaz Caneja", fechas: "03/OCT - 25/OCT", artistas: "Alumnos Taller Tapices", asistentes: 150, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra de trabajos elaborados en el taller municipal de tapices." },
             { id: 20, periodo: "Oct-Dic 2024", titulo: "Félix Arellano. Flor caníbal", disciplina: "Pintura y escultura", lugar: "Auditorio", fechas: "04/OCT - 31/OCT", artistas: "Félix Arellano", asistentes: 290, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra plástica combinando pintura y escultura de Félix Arellano." },
             { id: 21, periodo: "Oct-Dic 2024", titulo: "Juan Vicente Muñoz. Nomofobias", disciplina: "Escultura", lugar: "Sala Maruja Mallo", fechas: "17/OCT - 08/DIC", artistas: "Juan Vicente Muñoz", asistentes: 850, link: "", imagen: DEFAULT_IMG, infoAdicional: "Proyecto escultórico de Juan Vicente Muñoz integrado en el Plan de Salud Mental de Las Rozas." },
@@ -647,8 +656,6 @@
             { id: 24, periodo: "Oct-Dic 2024", titulo: "Asociación Esfumato. Transparencias", disciplina: "Pintura", lugar: "Auditorio", fechas: "12/DIC - 12/ENE", artistas: "Asociación Esfumato", asistentes: 250, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra colectiva de pintura de la Asociación Esfumato." },
             { id: 25, periodo: "Oct-Dic 2024", titulo: "Asociación Cámara en Mano. Las horas mágicas del sol", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "12/DIC - 12/ENE", artistas: "Asociación Cámara en Mano", asistentes: 250, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición de fotografía paisajística e iluminación natural realizada por Cámara en Mano." },
             { id: 26, periodo: "Oct-Dic 2024", titulo: "Ganadores y seleccionados Certamen José Caballero", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "19/DIC - 20/ENE", artistas: "Varios artistas", asistentes: 280, link: "", imagen: DEFAULT_IMG, infoAdicional: "Obras premiadas en el certamen anual de grabado." },
-
-            // Ene-Mar 2025
             { id: 27, periodo: "Ene-Mar 2025", titulo: "III Certamen Fotográfico Asociación Cámara en Mano", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "23/ENE - 13/FEB", artistas: "Asociación Cámara en Mano", asistentes: 120, link: "", imagen: DEFAULT_IMG, infoAdicional: "Ganadores y seleccionados del III Certamen Fotográfico de la Asociación Cámara en Mano." },
             { id: 28, periodo: "Ene-Mar 2025", titulo: "Alejandro Fernández Sáez (Kalifa). Poco tengo que decir", disciplina: "Pintura y dibujo", lugar: "Sala Maruja Mallo", fechas: "30/ENE - 02/MAR", artistas: "Kalifa", asistentes: 300, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición integrada en el Plan de Salud Mental con repercusión en prensa nacional (El País)." },
             { id: 29, periodo: "Ene-Mar 2025", titulo: "Lucía Rodríguez. Hilo de acero y bambú", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "30/ENE - 02/MAR", artistas: "Lucía Rodríguez", asistentes: 120, link: "", imagen: DEFAULT_IMG, infoAdicional: "Proyecto de fotografía artística de Lucía Rodríguez." },
@@ -657,8 +664,6 @@
             { id: 32, periodo: "Ene-Mar 2025", titulo: "37º Certamen de Fotografía Jesús y Adán", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "20/MAR - 03/ABR", artistas: "Concejalía de Juventud", asistentes: 150, link: "", imagen: DEFAULT_IMG, infoAdicional: "Obras premiadas en el concurso de fotografía para jóvenes Jesús y Adán." },
             { id: 33, periodo: "Ene-Mar 2025", titulo: "Exposición 'Olimpiadas Escolares'", disciplina: "Varios", lugar: "Sala Auditorio", fechas: "04/ABR", artistas: "Escuelas locales", asistentes: 230, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra conmemorativa de las Olimpiadas Escolares de Las Rozas." },
             { id: 34, periodo: "Ene-Mar 2025", titulo: "Fashion Show", disciplina: "Moda", lugar: "Sala Auditorio", fechas: "07/MAR", artistas: "Alumnas Taller Corte y Confección", asistentes: 300, link: "", imagen: DEFAULT_IMG, infoAdicional: "Presentación de diseños del Taller Municipal de Corte y Confección coordinado por Liseo Cachán." },
-
-            // Abr-Jun 2025
             { id: 35, periodo: "Abr-Jun 2025", titulo: "Tirando del hilo. Lenguajes textiles en el arte contemporáneo", disciplina: "Textil", lugar: "Sala Maruja Mallo", fechas: "14/ABR - 04/MAY", artistas: "Red Itiner / Bellas Artes CAM", asistentes: 420, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición realizada en colaboración con la Subdirección General de Bellas Artes de la Comunidad de Madrid." },
             { id: 36, periodo: "Abr-Jun 2025", titulo: "Asociación Cámara en Mano. Visiones textiles", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "10/ABR - 10/MAY", artistas: "Asociación Cámara en Mano", asistentes: 150, link: "", imagen: DEFAULT_IMG, infoAdicional: "Serie fotográfica sobre texturas e hilos." },
             { id: 37, periodo: "Abr-Jun 2025", titulo: "Pedro Palleiro. La ruina moderna", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "11/ABR - 11/MAY", artistas: "Pedro Palleiro", asistentes: 320, link: "", imagen: DEFAULT_IMG, infoAdicional: "Fotografías de Pedro Palleiro sobre espacios urbanos abandonados." },
@@ -669,8 +674,6 @@
             { id: 42, periodo: "Abr-Jun 2025", titulo: "Talleres infantiles Entremontes", disciplina: "Creatividad y pintura", lugar: "CC Entremontes", fechas: "05/MAY - 23/MAY", artistas: "Alumnos Entremontes", asistentes: 100, link: "", imagen: DEFAULT_IMG, infoAdicional: "Muestra de los talleres de creatividad y pintura en Entremontes." },
             { id: 43, periodo: "Abr-Jun 2025", titulo: "Talleres adultos Entremontes", disciplina: "Vidrio, restauración y pintura", lugar: "CC Entremontes", fechas: "28/MAY - 16/JUN", artistas: "Alumnos Entremontes", asistentes: 120, link: "", imagen: DEFAULT_IMG, infoAdicional: "Trabajos de vidrio, restauración y pintura de alumnos adultos." },
             { id: 44, periodo: "Abr-Jun 2025", titulo: "Talleres Centro Cultural Las Matas", disciplina: "Pintura adultos, dibujo y creatividad", lugar: "CC Las Matas", fechas: "16/JUN - 22/JUN", artistas: "Alumnos Las Matas", asistentes: 150, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición anual del Centro Cultural Las Matas Marga Gil Roësset." },
-
-            // Oct-Dic 2025
             { id: 45, periodo: "Oct-Dic 2025", titulo: "Marina Reina. Tras el umbral: Relatos de una estancia", disciplina: "Pintura y cerámica", lugar: "Sala Maruja Mallo", fechas: "09/OCT - 06/NOV", artistas: "Marina Reina", asistentes: 620, link: "", imagen: DEFAULT_IMG, infoAdicional: "Obras de pintura y cerámica de Marina Reina." },
             { id: 46, periodo: "Oct-Dic 2025", titulo: "José Luis García de Ceca. Acuarelas", disciplina: "Pintura", lugar: "Sala Díaz Caneja", fechas: "09/OCT - 21/NOV", artistas: "José Luis García de Ceca", asistentes: 450, link: "", imagen: DEFAULT_IMG, infoAdicional: "Colección de acuarelas de José Luis García de Ceca." },
             { id: 47, periodo: "Oct-Dic 2025", titulo: "Vicente Sarrión. A través de los años", disciplina: "Pintura", lugar: "Sala Auditorio", fechas: "03/OCT - 31/OCT", artistas: "Vicente Sarrión", asistentes: 320, link: "", imagen: DEFAULT_IMG, infoAdicional: "Retrospectiva pictórica de Vicente Sarrión." },
@@ -679,8 +682,6 @@
             { id: 50, periodo: "Oct-Dic 2025", titulo: "Ganadores y seleccionados. XXVI Certamen José Caballero", disciplina: "Grabado", lugar: "Sala Maruja Mallo", fechas: "18/DIC - 20/ENE", artistas: "Varios artistas", asistentes: 410, link: "", imagen: DEFAULT_IMG, infoAdicional: "Obras del XXVI Certamen de Grabado José Caballero." },
             { id: 51, periodo: "Oct-Dic 2025", titulo: "Asociación Esfumato. 20 años, 20 miradas", disciplina: "Pintura", lugar: "Sala Díaz Caneja", fechas: "11/DIC - 15/ENE", artistas: "Asociación Esfumato", asistentes: 200, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición conmemorativa del 20º aniversario de la Asociación Esfumato." },
             { id: 52, periodo: "Oct-Dic 2025", titulo: "Imágenes de la Navidad en el Archivo ABC", disciplina: "Fotografía", lugar: "Calle", fechas: "15/DIC - 03/ABR", artistas: "Archivo ABC", asistentes: 1100, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición fotográfica al aire libre con imágenes históricas del Archivo ABC." },
-
-            // Ene-Mar 2026
             { id: 53, periodo: "Ene-Mar 2026", titulo: "IV Certamen fotográfico Cámara en Mano", disciplina: "Fotografía", lugar: "Sala Díaz Caneja", fechas: "15/ENE - 15/FEB", artistas: "Asociación Cámara en Mano", asistentes: 350, link: "", imagen: DEFAULT_IMG, infoAdicional: "Edición IV del certamen fotográfico organizado por Cámara en Mano." },
             { id: 54, periodo: "Ene-Mar 2026", titulo: "Mateo García Menéndez. Las formas del hábito", disciplina: "Pintura", lugar: "Sala Auditorio", fechas: "24/ENE - 26/FEB", artistas: "Mateo García Menéndez", asistentes: 1100, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición pictórica de Mateo García Menéndez en el Auditorio." },
             { id: 55, periodo: "Ene-Mar 2026", titulo: "Eduardo Arroyo: la creación de un artista", disciplina: "Dibujo", lugar: "Sala Maruja Mallo", fechas: "29/ENE - 19/FEB", artistas: "Eduardo Arroyo / Red Itiner", asistentes: 850, link: "", imagen: DEFAULT_IMG, infoAdicional: "Exposición inédita sobre la obra dibujística de Eduardo Arroyo durante su etapa parisina en los años 60." },
@@ -690,15 +691,42 @@
             { id: 59, periodo: "Ene-Mar 2026", titulo: "Música popular: una visión fotográfica", disciplina: "Fotografía", lugar: "Sala Auditorio", fechas: "20/MAR - 12/ABR", artistas: "Varios artistas", asistentes: 253, link: "", imagen: DEFAULT_IMG, infoAdicional: "Fotografías documentales sobre la historia y manifestaciones de la música popular." }
         ];
 
+        window.exposiciones = [];
         let chartGenEvolucion, chartGenDisciplinas, chartAnaInteres, chartAnaSalas, chartAnaPromSala, chartAnaEvolMedia;
 
-        window.onload = function() {
+        // Referencias a nodos en Firebase
+        const exposRef = ref(db, 'exposiciones');
+        const infoRef = ref(db, 'informacion');
+
+        // Escucha en tiempo real de exposiciones
+        onValue(exposRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                window.exposiciones = Array.isArray(data) ? data : Object.values(data);
+            } else {
+                window.exposiciones = exposicionesIniciales;
+                set(exposRef, exposicionesIniciales);
+            }
             poblarFiltroDisciplinas();
             actualizarTodo();
-            document.getElementById('infoEditor').value = document.getElementById('infoDisplay').innerHTML;
-        };
+        });
 
-        function switchTab(tabId, event) {
+        // Escucha en tiempo real de la sección de información
+        onValue(infoRef, (snapshot) => {
+            const infoData = snapshot.val();
+            if (infoData) {
+                document.getElementById('infoDisplay').innerHTML = infoData;
+                if (document.getElementById('infoEditor')) {
+                    document.getElementById('infoEditor').value = infoData;
+                }
+            } else {
+                const initialInfo = document.getElementById('infoDisplay').innerHTML;
+                set(infoRef, initialInfo);
+            }
+        });
+
+        // Funciones del sistema asignadas al ámbito global (window)
+        window.switchTab = function(tabId, event) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
@@ -710,12 +738,13 @@
             } else if(tabId === 'admin' && isAdminAuthenticated) {
                 renderTablaAdmin();
             }
-        }
+        };
 
         function poblarFiltroDisciplinas() {
             const select = document.getElementById('disciplinaFilter');
+            if(!select) return;
             select.innerHTML = '<option value="TODOS">Todas las disciplinas</option>';
-            const disciplinas = [...new Set(exposiciones.map(e => e.disciplina))];
+            const disciplinas = [...new Set(window.exposiciones.map(e => e.disciplina))];
             disciplinas.forEach(d => {
                 const opt = document.createElement('option');
                 opt.value = d;
@@ -732,13 +761,13 @@
         }
 
         function renderKPIs() {
-            const totalExp = exposiciones.length;
-            const totalAsist = exposiciones.reduce((sum, e) => sum + e.asistentes, 0);
+            const totalExp = window.exposiciones.length;
+            const totalAsist = window.exposiciones.reduce((sum, e) => sum + Number(e.asistentes), 0);
             const promAsist = totalExp > 0 ? Math.round(totalAsist / totalExp) : 0;
 
             const discMap = {};
-            exposiciones.forEach(e => {
-                discMap[e.disciplina] = (discMap[e.disciplina] || 0) + e.asistentes;
+            window.exposiciones.forEach(e => {
+                discMap[e.disciplina] = (discMap[e.disciplina] || 0) + Number(e.asistentes);
             });
             let topDisc = "-";
             let maxAsist = 0;
@@ -764,14 +793,13 @@
             const disciplina = document.getElementById('disciplinaFilter').value;
             const orden = document.getElementById('ordenFilter').value;
 
-            let filtradas = exposiciones.filter(e => {
+            let filtradas = window.exposiciones.filter(e => {
                 const matchSearch = e.titulo.toLowerCase().includes(search) || e.artistas.toLowerCase().includes(search);
                 const matchPeriodo = periodo === "TODOS" || e.periodo === periodo;
                 const matchDisciplina = disciplina === "TODOS" || e.disciplina === disciplina;
                 return matchSearch && matchPeriodo && matchDisciplina;
             });
 
-            // ORDENACIÓN DE EXPOSICIONES
             if(orden === "ASIST_DESC") {
                 filtradas.sort((a, b) => b.asistentes - a.asistentes);
             } else if(orden === "ASIST_ASC") {
@@ -797,7 +825,7 @@
                             <div class="expo-info"><strong>Fechas:</strong> ${e.fechas}</div>
                         </div>
                         <div style="margin-top: 12px; font-weight: bold; color: var(--primary-color);">
-                            👥 ${e.asistentes.toLocaleString('es-ES')} Asistentes
+                            👥 ${Number(e.asistentes).toLocaleString('es-ES')} Asistentes
                         </div>
                     </div>
                 `;
@@ -805,11 +833,11 @@
             });
         }
 
-        function filtrarExposiciones() {
+        window.filtrarExposiciones = function() {
             renderGridExposiciones();
-        }
+        };
 
-        function abrirModal(e) {
+        window.abrirModal = function(e) {
             document.getElementById('modalImg').src = e.imagen || DEFAULT_IMG;
             document.getElementById('modalTag').innerText = e.disciplina;
             document.getElementById('modalTitulo').innerText = e.titulo;
@@ -817,7 +845,7 @@
             document.getElementById('modalLugar').innerText = e.lugar;
             document.getElementById('modalFechas').innerText = e.fechas;
             document.getElementById('modalArtistas').innerText = e.artistas;
-            document.getElementById('modalAsistentes').innerText = e.asistentes.toLocaleString('es-ES');
+            document.getElementById('modalAsistentes').innerText = Number(e.asistentes).toLocaleString('es-ES');
             document.getElementById('modalInfoAdicional').innerText = e.infoAdicional || "Sin información adicional registrada.";
             
             const linkCont = document.getElementById('modalLinkContainer');
@@ -828,14 +856,13 @@
             }
 
             document.getElementById('expoModal').style.display = 'flex';
-        }
+        };
 
-        function cerrarModal() {
+        window.cerrarModal = function() {
             document.getElementById('expoModal').style.display = 'none';
-        }
+        };
 
-        /* ADMINISTRACION */
-        function autenticarAdmin(event) {
+        window.autenticarAdmin = function(event) {
             event.preventDefault();
             const pass = document.getElementById('adminPassword').value;
             if(pass === ADMIN_PASS) {
@@ -847,19 +874,19 @@
             } else {
                 document.getElementById('loginError').style.display = 'block';
             }
-        }
+        };
 
-        function cerrarSesionAdmin() {
+        window.cerrarSesionAdmin = function() {
             isAdminAuthenticated = false;
             document.getElementById('adminLoginCard').style.display = 'block';
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('adminPassword').value = '';
-        }
+        };
 
         function renderTablaAdmin() {
             const tbody = document.getElementById('adminExpoTableBody');
             tbody.innerHTML = "";
-            exposiciones.forEach(e => {
+            window.exposiciones.forEach(e => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${e.id}</td>
@@ -876,8 +903,8 @@
             });
         }
 
-        function cargarExpoParaEditar(id) {
-            const expo = exposiciones.find(e => e.id === id);
+        window.cargarExpoParaEditar = function(id) {
+            const expo = window.exposiciones.find(e => e.id === id);
             if(!expo) return;
 
             document.getElementById('formExpoId').value = expo.id;
@@ -897,17 +924,17 @@
             document.getElementById('btnFormCancel').style.display = "inline-block";
 
             window.scrollTo({ top: document.getElementById('addExpoForm').offsetTop - 20, behavior: 'smooth' });
-        }
+        };
 
-        function resetearFormularioAdmin() {
+        window.resetearFormularioAdmin = function() {
             document.getElementById('addExpoForm').reset();
             document.getElementById('formExpoId').value = "-1";
             document.getElementById('formAdminTitle').innerText = "Añadir Nueva Exposición";
             document.getElementById('btnFormSave').innerText = "Guardar Exposición";
             document.getElementById('btnFormCancel').style.display = "none";
-        }
+        };
 
-        function guardarExposicionAdmin(event) {
+        window.guardarExposicionAdmin = function(event) {
             event.preventDefault();
             if(!isAdminAuthenticated) return;
 
@@ -923,43 +950,48 @@
             const imagen = document.getElementById('formImagenUrl').value || DEFAULT_IMG;
             const infoAdicional = document.getElementById('formInformacionAdicional').value;
 
+            let updatedExpos = [...window.exposiciones];
+
             if(id === -1) {
-                // CREAR NUEVA
-                const maxId = exposiciones.length > 0 ? Math.max(...exposiciones.map(e => e.id)) : 0;
-                exposiciones.push({
+                const maxId = updatedExpos.length > 0 ? Math.max(...updatedExpos.map(e => e.id)) : 0;
+                updatedExpos.push({
                     id: maxId + 1,
                     periodo, titulo, disciplina, lugar, fechas, artistas, asistentes, link, imagen, infoAdicional
                 });
-                alert("Exposición agregada con éxito.");
             } else {
-                // EDITAR EXISTENTE
-                const index = exposiciones.findIndex(e => e.id === id);
+                const index = updatedExpos.findIndex(e => e.id === id);
                 if(index !== -1) {
-                    exposiciones[index] = { id, periodo, titulo, disciplina, lugar, fechas, artistas, asistentes, link, imagen, infoAdicional };
-                    alert("Exposición modificada correctamente.");
+                    updatedExpos[index] = { id, periodo, titulo, disciplina, lugar, fechas, artistas, asistentes, link, imagen, infoAdicional };
                 }
             }
 
-            resetearFormularioAdmin();
-            poblarFiltroDisciplinas();
-            actualizarTodo();
-        }
+            // Sincronización con Firebase
+            set(exposRef, updatedExpos).then(() => {
+                alert("Base de datos actualizada correctamente en la nube.");
+                resetearFormularioAdmin();
+            }).catch((error) => {
+                alert("Error al actualizar la base de datos: " + error.message);
+            });
+        };
 
-        function guardarInformacionRedactada() {
+        window.guardarInformacionRedactada = function() {
             if(!isAdminAuthenticated) return;
             const nuevoTexto = document.getElementById('infoEditor').value;
-            document.getElementById('infoDisplay').innerHTML = nuevoTexto;
-            alert("Pestaña Información actualizada.");
-        }
+            set(infoRef, nuevoTexto).then(() => {
+                alert("Pestaña Información actualizada en la nube.");
+            }).catch((error) => {
+                alert("Error al guardar información: " + error.message);
+            });
+        };
 
-        /* GRAFICOS Y ANALISIS AMPLIADO */
         function actualizarGraficos() {
-            const periodos = [...new Set(exposiciones.map(e => e.periodo))];
+            if (!window.exposiciones || window.exposiciones.length === 0) return;
+
+            const periodos = [...new Set(window.exposiciones.map(e => e.periodo))];
             const asistPorPeriodo = periodos.map(p => {
-                return exposiciones.filter(e => e.periodo === p).reduce((sum, e) => sum + e.asistentes, 0);
+                return window.exposiciones.filter(e => e.periodo === p).reduce((sum, e) => sum + Number(e.asistentes), 0);
             });
 
-            // 1. Evolución de Asistentes Totales
             if(chartGenEvolucion) chartGenEvolucion.destroy();
             chartGenEvolucion = new Chart(document.getElementById('chartGeneralEvolucion'), {
                 type: 'line',
@@ -976,9 +1008,8 @@
                 }
             });
 
-            // 2. Distribución por Disciplina
             const discMap = {};
-            exposiciones.forEach(e => discMap[e.disciplina] = (discMap[e.disciplina] || 0) + 1);
+            window.exposiciones.forEach(e => discMap[e.disciplina] = (discMap[e.disciplina] || 0) + 1);
 
             if(chartGenDisciplinas) chartGenDisciplinas.destroy();
             chartGenDisciplinas = new Chart(document.getElementById('chartGeneralDisciplinas'), {
@@ -992,10 +1023,9 @@
                 }
             });
 
-            // 3. Promedio por Disciplina
             const discAsist = {}, discCount = {};
-            exposiciones.forEach(e => {
-                discAsist[e.disciplina] = (discAsist[e.disciplina] || 0) + e.asistentes;
+            window.exposiciones.forEach(e => {
+                discAsist[e.disciplina] = (discAsist[e.disciplina] || 0) + Number(e.asistentes);
                 discCount[e.disciplina] = (discCount[e.disciplina] || 0) + 1;
             });
             const discProm = Object.keys(discAsist).map(d => Math.round(discAsist[d] / discCount[d]));
@@ -1013,10 +1043,9 @@
                 }
             });
 
-            // 4. Afluencia por Sala
             const salaMap = {}, salaCount = {};
-            exposiciones.forEach(e => {
-                salaMap[e.lugar] = (salaMap[e.lugar] || 0) + e.asistentes;
+            window.exposiciones.forEach(e => {
+                salaMap[e.lugar] = (salaMap[e.lugar] || 0) + Number(e.asistentes);
                 salaCount[e.lugar] = (salaCount[e.lugar] || 0) + 1;
             });
 
@@ -1034,7 +1063,6 @@
                 options: { indexAxis: 'y' }
             });
 
-            // 5. Promedio de Asistentes por Sala (Eficiencia de Espacio)
             const salaProm = Object.keys(salaMap).map(s => Math.round(salaMap[s] / salaCount[s]));
             if(chartAnaPromSala) chartAnaPromSala.destroy();
             chartAnaPromSala = new Chart(document.getElementById('chartAnalisisPromedioSala'), {
@@ -1049,10 +1077,9 @@
                 }
             });
 
-            // 6. Evolución del Promedio de Asistencia por Exposición en el Tiempo
             const promPorPeriodo = periodos.map(p => {
-                const expsPeriodo = exposiciones.filter(e => e.periodo === p);
-                const total = expsPeriodo.reduce((sum, e) => sum + e.asistentes, 0);
+                const expsPeriodo = window.exposiciones.filter(e => e.periodo === p);
+                const total = expsPeriodo.reduce((sum, e) => sum + Number(e.asistentes), 0);
                 return expsPeriodo.length > 0 ? Math.round(total / expsPeriodo.length) : 0;
             });
 
