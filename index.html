@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Histórico de Exposiciones - Fundación Cultura Las Rozas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="palette" class="w-8 h-8 text-amber-400"></i>
+                    <div>
+                        <h1 class="font-bold text-lg leading-none">Cultura Las Rozas</h1>
+                        <span class="text-xs text-indigo-200">Área de Artes Visuales - CIF: G09841529</span>
+                    </div>
+                </div>
+                <nav class="flex space-x-2 sm:space-x-4">
+                    <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-btn px-3 py-2 rounded-md text-sm font-medium bg-indigo-800 text-white flex items-center space-x-1">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                        <span>Histórico Exposiciones</span>
+                    </button>
+                    <button onclick="switchTab('audiencias')" id="tab-btn-audiencias" class="nav-btn px-3 py-2 rounded-md text-sm font-medium text-indigo-200 hover:bg-indigo-800 hover:text-white flex items-center space-x-1">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        <span>Análisis de Visitantes</span>
+                    </button>
+                    <button onclick="switchTab('admin')" id="tab-btn-admin" class="nav-btn px-3 py-2 rounded-md text-sm font-medium text-indigo-200 hover:bg-indigo-800 hover:text-white flex items-center space-x-1">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span>Gestión de Datos</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <section id="pane-dashboard" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Análisis del Histórico de Exposiciones Artísticas</h2>
+                <p class="text-slate-600 text-sm">
+                    Datos consolidados exclusivamente de las memorias oficiales del Contrato Programa entre el Ayuntamiento de Las Rozas de Madrid y la Fundación Municipal de Cultura[cite: 1, 2, 3, 4, 5, 6, 7, 8].
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                    <div class="p-3 bg-indigo-100 text-indigo-700 rounded-lg">
+                        <i data-lucide="image" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase">Exposiciones (Ene-Mar 2026)</p>
+                        <p class="text-2xl font-bold text-slate-900">8</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                    <div class="p-3 bg-emerald-100 text-emerald-700 rounded-lg">
+                        <i data-lucide="eye" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase">Asistentes (Ene-Mar 2026)</p>
+                        <p class="text-2xl font-bold text-slate-900">4.793</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                    <div class="p-3 bg-amber-100 text-amber-700 rounded-lg">
+                        <i data-lucide="layers" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase">Total Exposiciones Registradas</p>
+                        <p class="text-2xl font-bold text-slate-900" id="total-expos-kpi">63</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 text-blue-700 rounded-lg">
+                        <i data-lucide="building-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase">Sede Oficial</p>
+                        <p class="text-xs font-bold text-slate-900">Camino del Caño, 2</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
+                        <i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i>
+                        <span>Nº de Exposiciones Temporales por Trimestre</span>
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="chartActividades"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
+                        <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-600"></i>
+                        <span>Distribución de Muestras por Trimestre</span>
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="chartAreas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pane-audiencias" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Análisis de Visitantes en Salas de Exposición</h2>
+                <p class="text-slate-600 text-sm">
+                    Afluencia registrada en muestras temporales de la Fundación Municipal de Cultura (Salas: Maruja Mallo, J.M. Díaz Caneja, Auditorio y exterior)[cite: 1, 2, 3, 4, 5, 6, 7, 8].
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm col-span-2">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Evolución Trimestral de Asistentes a Exposiciones</h3>
+                    <div class="relative h-72">
+                        <canvas id="chartAudiencias"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-lg font-bold text-slate-800">Evaluación de Proyección Institucional</h3>
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                        <span class="text-xs font-semibold text-indigo-600 uppercase">Colaboraciones y Redes</span>
+                        <p class="text-sm text-slate-700 mt-1">
+                            Integración de exposiciones de la Red Itiner de la Comunidad de Madrid, Facultad de Bellas Artes (UCM) y certámenes locales (José Caballero, Cámara en Mano, Jesús y Adán)[cite: 1, 2, 3, 4, 5, 7, 8].
+                        </p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                        <span class="text-xs font-semibold text-indigo-600 uppercase">Disciplinas Representadas</span>
+                        <p class="text-sm text-slate-700 mt-1">
+                            Pintura, fotografía, escultura, grabado, arte textil, cerámica, dibujo y moda[cite: 1, 2, 3, 4, 5, 6, 7, 8].
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pane-admin" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Panel de Administración de Datos</h2>
+                <p class="text-slate-600 text-sm">
+                    Gestión local de registros de exposiciones temporales y exportación del dataset.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center space-x-2">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-600"></i>
+                        <span>Añadir Registro al Dataset</span>
+                    </h3>
+                    <form id="dataForm" onsubmit="handleAddData(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 uppercase mb-1">Periodo / Trimestre</label>
+                                <input type="text" id="inputPeriodo" required placeholder="Ej. Abr-Jun 2026" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 uppercase mb-1">Área Cultural</label>
+                                <input type="text" id="inputArea" value="Artes Visuales" readonly class="w-full border border-slate-200 bg-slate-100 rounded-lg px-3 py-2 text-sm text-slate-600 focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 uppercase mb-1">Nº de Exposiciones</label>
+                                <input type="number" id="inputNum" required min="1" placeholder="Ej. 8" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 uppercase mb-1">Visitantes / Asistentes</label>
+                                <input type="number" id="inputAudiencia" min="0" placeholder="Ej. 2500" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition-colors text-sm flex items-center justify-center space-x-2">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>Guardar Registro</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-lg font-bold text-slate-800">Acciones de Datos</h3>
+                    <p class="text-xs text-slate-500">
+                        Control de persistencia de datos almacenados localmente.
+                    </p>
+                    <button onclick="exportJSON()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg text-sm border border-slate-300 flex items-center justify-center space-x-2">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Exportar Dataset (JSON)</span>
+                    </button>
+                    <button onclick="resetData()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 rounded-lg text-sm border border-red-200 flex items-center justify-center space-x-2">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        <span>Restablecer Datos Históricos</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-xs">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-1">
+            <p class="font-semibold text-slate-300">Fundación Municipal de Cultura de Las Rozas de Madrid</p>
+            <p>C/ Camino del Caño, 2, 28231 Las Rozas de Madrid | CIF: G09841529</p>
+            <p>Inscrita en el Registro de Fundaciones de la Comunidad de Madrid al tomo CCXCVIII, Folios 301-318, Inscripción 1ª</p>
+        </div>
+    </footer>
+
+    <script>
+        // DATOS EXTRAÍDOS CON RIGOR EXCLUSIVAMENTE DE LAS MEMORIAS TÉCNICAS (ÁREA DE ARTES VISUALES)
+        const initialDataset = {
+            actividades: [
+                { periodo: 'Ene-Mar 2024', area: 'Artes Visuales', cantidad: 9, audiencia: 1560 },
+                { periodo: 'Abr-Jun 2024', area: 'Artes Visuales', cantidad: 10, audiencia: 2210 },
+                { periodo: 'Jul-Sep 2024', area: 'Artes Visuales', cantidad: 2, audiencia: 550 },
+                { periodo: 'Oct-Dic 2024', area: 'Artes Visuales', cantidad: 8, audiencia: 2400 },
+                { periodo: 'Ene-Mar 2025', area: 'Artes Visuales', cantidad: 8, audiencia: 3270 },
+                { periodo: 'Abr-Jun 2025', area: 'Artes Visuales', cantidad: 10, audiencia: 2350 },
+                { periodo: 'Oct-Dic 2025', area: 'Artes Visuales', cantidad: 8, audiencia: 4450 },
+                { periodo: 'Ene-Mar 2026', area: 'Artes Visuales', cantidad: 8, audiencia: 4793 }
+            ],
+            distribucionAreas: {
+                'Ene-Mar 2024': 9,
+                'Abr-Jun 2024': 10,
+                'Jul-Sep 2024': 2,
+                'Oct-Dic 2024': 8,
+                'Ene-Mar 2025': 8,
+                'Abr-Jun 2025': 10,
+                'Oct-Dic 2025': 8,
+                'Ene-Mar 2026': 8
+            }
+        };
+
+        let currentData = JSON.parse(localStorage.getItem('cultura_las_rozas_expos_db')) || initialDataset;
+
+        let chartAct, chartArea, chartAud;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initCharts();
+            updateKPIs();
+        });
+
+        function switchTab(tabName) {
+            document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-800', 'text-white');
+                btn.classList.add('text-indigo-200');
+            });
+
+            document.getElementById(`pane-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            activeBtn.classList.add('bg-indigo-800', 'text-white');
+            activeBtn.classList.remove('text-indigo-200');
+        }
+
+        function initCharts() {
+            const ctxAct = document.getElementById('chartActividades').getContext('2d');
+            chartAct = new Chart(ctxAct, {
+                type: 'bar',
+                data: {
+                    labels: currentData.actividades.map(d => d.periodo),
+                    datasets: [{
+                        label: 'Número de Exposiciones Temporales',
+                        data: currentData.actividades.map(d => d.cantidad),
+                        backgroundColor: '#4f46e5',
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctxArea = document.getElementById('chartAreas').getContext('2d');
+            chartArea = new Chart(ctxArea, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(currentData.distribucionAreas),
+                    datasets: [{
+                        data: Object.values(currentData.distribucionAreas),
+                        backgroundColor: [
+                            '#4f46e5', '#6366f1', '#818cf8', '#3b82f6',
+                            '#06b6d4', '#10b981', '#f59e0b', '#ec4899'
+                        ]
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctxAud = document.getElementById('chartAudiencias').getContext('2d');
+            chartAud = new Chart(ctxAud, {
+                type: 'line',
+                data: {
+                    labels: currentData.actividades.map(d => d.periodo),
+                    datasets: [{
+                        label: 'Asistentes Registrados',
+                        data: currentData.actividades.map(d => d.audiencia),
+                        borderColor: '#059669',
+                        backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function handleAddData(e) {
+            e.preventDefault();
+            const periodo = document.getElementById('inputPeriodo').value;
+            const area = 'Artes Visuales';
+            const cantidad = parseInt(document.getElementById('inputNum').value);
+            const audiencia = parseInt(document.getElementById('inputAudiencia').value) || 0;
+
+            currentData.actividades.push({ periodo, area, cantidad, audiencia });
+            currentData.distribucionAreas[periodo] = cantidad;
+
+            localStorage.setItem('cultura_las_rozas_expos_db', JSON.stringify(currentData));
+            updateCharts();
+            updateKPIs();
+            alert('Registro guardado exitosamente.');
+            document.getElementById('dataForm').reset();
+        }
+
+        function updateCharts() {
+            chartAct.data.labels = currentData.actividades.map(d => d.periodo);
+            chartAct.data.datasets[0].data = currentData.actividades.map(d => d.cantidad);
+            chartAct.update();
+
+            chartArea.data.labels = Object.keys(currentData.distribucionAreas);
+            chartArea.data.datasets[0].data = Object.values(currentData.distribucionAreas);
+            chartArea.update();
+
+            chartAud.data.labels = currentData.actividades.map(d => d.periodo);
+            chartAud.data.datasets[0].data = currentData.actividades.map(d => d.audiencia);
+            chartAud.update();
+        }
+
+        function updateKPIs() {
+            const total = currentData.actividades.reduce((sum, item) => sum + item.cantidad, 0);
+            const kpiElem = document.getElementById('total-expos-kpi');
+            if (kpiElem) {
+                kpiElem.innerText = total;
+            }
+        }
+
+        function resetData() {
+            if(confirm('¿Desea restablecer los datos exclusivamente a los valores oficiales de las memorias técnicas?')) {
+                localStorage.removeItem('cultura_las_rozas_expos_db');
+                currentData = JSON.parse(JSON.stringify(initialDataset));
+                updateCharts();
+                updateKPIs();
+            }
+        }
+
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentData, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "historico_exposiciones_las_rozas.json");
+            dlAnchor.click();
+        }
+    </script>
+</body>
+</html>
